@@ -7,8 +7,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.get('/ping', (req, res) => {
-  return res.send('pong');
+app.get('/login', (req, res) => {
+  return res.json({ success: true, endpoint: '/login' }); //<--is equivalent to res.send(JSON.stringify({ success: true }))
 });
 
 app.listen(4000, () => {
