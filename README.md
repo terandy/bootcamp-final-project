@@ -3,8 +3,10 @@ and uses [Node.js](https://nodejs.org/en/) and [Express](https://expressjs.com/)
 
 ## How to view in browser
 
-In the project directory, run `npm install` and the following:
+In the project directory, run:
 
+### `npm install`
+Installs all necessary libraries.
 
 ### `npm start`
 
@@ -14,4 +16,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### `node server.js`
 
+You can insert code in different window/tab, but same directory. <br />
 Runs the server at port 4000.
+
