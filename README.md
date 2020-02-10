@@ -3,7 +3,8 @@ and uses [Node.js](https://nodejs.org/en/) and [Express](https://expressjs.com/)
 
 ## How to view in browser
 
-In the project directory, run both:
+In the project directory, run `npm install` and the following:
+
 
 ### `npm start`
 
