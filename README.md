@@ -13,9 +13,8 @@ Installs all necessary libraries.
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-
 ### `node server.js`
 
-You can insert code in different window/tab, but same directory. <br />
 Runs the server at port 4000.
+
 
