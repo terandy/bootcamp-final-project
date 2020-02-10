@@ -5,16 +5,16 @@ and uses [Node.js](https://nodejs.org/en/) and [Express](https://expressjs.com/)
 
 In the project directory, run:
 
-### `npm install`
+#### `npm install`
 Installs all necessary libraries.
 
-### `npm start`
+#### `npm start`
 
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### `node server.js`
+#### `node server.js`
 
-Runs the server at port 4000.
+Run in a seperate window or tab of the terminal (still in the same directory).
 
 
