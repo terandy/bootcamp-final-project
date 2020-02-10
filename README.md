@@ -11,6 +11,6 @@ Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 
-### `nodemon/node server.js`
+### `node server.js`
 
-Runs the server at pot 4000.
+Runs the server at port 4000.
