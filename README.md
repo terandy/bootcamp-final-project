@@ -1,20 +1,21 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app)
-and uses [Node.js](https://nodejs.org/en/) and [Express](https://expressjs.com/) for the backend. 
+This project uses :
+- Frontend: [React](https://reactjs.org/)
+- Backend:[Node.js](https://nodejs.org/en/), [Express](https://expressjs.com/),and [Socket.io](https://socket.io/)
+- Database: [MongoDB](https://www.mongodb.com/)
 
 ## How to view in browser
 
-In the project directory, run:
+In the following directories, run:
 
-#### `npm install`
-Installs all necessary libraries.
+#### `npm install` and `npm start`
 
-#### Client directory: `npm start`
+#### Client directory:
 
 Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3000](http://localhost:3000) to view it in browser.
 
-#### Client directory: `npm start`
+#### Server directory:
 
-Run in a seperate window or tab of the terminal (still in the same directory).
+Runs server.js
 
 
