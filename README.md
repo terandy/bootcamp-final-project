@@ -1,6 +1,6 @@
 This project uses :
 - Frontend: [React](https://reactjs.org/)
-- Backend:[Node.js](https://nodejs.org/en/), [Express](https://expressjs.com/),and [Socket.io](https://socket.io/)
+- Backend: [Node.js](https://nodejs.org/en/), [Express](https://expressjs.com/), and [Socket.io](https://socket.io/)
 - Database: [MongoDB](https://www.mongodb.com/)
 
 ## How to view in browser
