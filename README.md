@@ -8,12 +8,12 @@ In the project directory, run:
 #### `npm install`
 Installs all necessary libraries.
 
-#### `npm start`
+#### Client directory: `npm start`
 
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-#### `node server.js`
+#### Client directory: `npm start`
 
 Run in a seperate window or tab of the terminal (still in the same directory).
 
