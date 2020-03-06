@@ -1,15 +1,13 @@
 import styled from 'styled-components';
 
 let MsgInputStyle = styled.form`
+  /* box-sizing: border-box; */
   width: 100%;
-  height: 100%;
   display: flex;
-  box-sizing: border-box;
-  border: solid 1px grey;
+  border-top: solid 1px lightgrey;
+  padding: 0.5em 0;
   align-items: center;
-  & > * {
-    box-sizing: border-box;
-  }
+  background-color: white;
   div {
     display: flex;
     justify-content: center;
@@ -22,6 +20,9 @@ let MsgInputStyle = styled.form`
   button {
     background-color: transparent;
     border: none;
+    img {
+      height: 2em;
+    }
     &:hover {
       cursor: pointer;
     }

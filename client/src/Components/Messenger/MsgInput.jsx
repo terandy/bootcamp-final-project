@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { socket } from './../Home/Login';
 import { MsgInputStyle } from './MsgInputStyle.jsx';
 
 let MsgInput = props => {
+  let formRef = useRef();
   let convoID = props.convoID;
   let [msgContent, setMsgContent] = useState('');
   let user = useSelector(state => state.userInfo.email);
-  let members = useSelector(state => state.conversations[convoID].members);
+  let convo = useSelector(state => state.conversations[convoID]);
 
   let submitHandler = async evt => {
     evt.preventDefault();
-    socket.emit('new message', user, msgContent, convoID, members);
+    socket.emit('new message', user, msgContent, convoID, convo.members);
     setMsgContent('');
     return;
   };
@@ -20,8 +21,13 @@ let MsgInput = props => {
     setMsgContent(evt.target.value);
     return;
   };
+  let onEnterSubmit = evt => {
+    if (evt.keyCode === 13) {
+      submitHandler(evt);
+    }
+  };
   return (
-    <MsgInputStyle onSubmit={submitHandler}>
+    <MsgInputStyle onSubmit={submitHandler} ref={formRef}>
       <div>+</div>
       <div>x</div>
       <textarea
@@ -29,9 +35,12 @@ let MsgInput = props => {
         type="text"
         value={msgContent}
         onChange={onChangeHandler}
+        onKeyDown={onEnterSubmit}
         placeholder="Type a message..."
       />
-      <button>send</button>
+      <button>
+        <img alt="send" src={'/send-button.png'} />
+      </button>
     </MsgInputStyle>
   );
 };

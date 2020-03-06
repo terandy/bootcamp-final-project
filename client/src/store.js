@@ -6,7 +6,9 @@ let initialState = {
   userInfo: {}, // fname,email,description,type,image
   conversations: {}, // convoID:{members,messages}, members=[userID,..], messages=[{content,sender,time},..]
   activeUsers: {}, // userID:{fname,image,description}
-  convoList: {} // convoID:{label,members}
+  convoList: {}, // convoID:{label,members}
+  convoUsers: {},
+  currentConvo: ''
 };
 
 let reducer = (state, action) => {
@@ -17,6 +19,16 @@ let reducer = (state, action) => {
         newState.userInfo = action.content.userInfo;
         newState.activeUsers = action.content.activeUsers;
         newState.convoList = action.content.convoList;
+        newState.convoUsers = action.content.convoUsers;
+        Object.keys(action.content.convoList).forEach(convoID => {
+          newState.conversations[convoID] = { messages: [], members: [] };
+        });
+        break;
+      case 'edit-profile-img':
+        newState.userInfo.imgSrc = action.content.imgSrc;
+        break;
+      case 'set-current-convo':
+        newState.currentConvo = action.content;
         break;
       case 'new-convo':
         let ac = action.content;
@@ -42,7 +54,6 @@ let reducer = (state, action) => {
         delete newState.activeUsers[action.content];
         break;
       case 'get-message':
-        console.log('get-message');
         newState.conversations[action.content.convoID].messages.push({
           sender: action.content.sender,
           content: action.content.content,

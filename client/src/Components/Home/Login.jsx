@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Form, { Title, E } from './FormStyle.jsx';
+import styled from 'styled-components';
 import io from 'socket.io-client';
 const socket = io('localhost:5000', {
   autoConnect: false
 });
+const FormLogin = styled(Form)`
+  right: 0;
+  left: auto;
+`;
 let Login = () => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -28,7 +33,8 @@ let Login = () => {
         content: {
           userInfo: response.userInfo,
           activeUsers: response.activeUsers,
-          convoList: response.convoList
+          convoList: response.convoList,
+          convoUsers: response.convoUsers
         }
       });
       socket.connect();
@@ -40,7 +46,7 @@ let Login = () => {
     }
   };
   return (
-    <Form onSubmit={submitHandler}>
+    <FormLogin onSubmit={submitHandler}>
       <Title>
         <h1>Sign in</h1>
       </Title>
@@ -73,7 +79,7 @@ let Login = () => {
 
       <button>Sign in</button>
       <E>{errorMessage}</E>
-    </Form>
+    </FormLogin>
   );
 };
 

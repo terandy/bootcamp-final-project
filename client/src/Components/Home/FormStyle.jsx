@@ -10,15 +10,32 @@ let Title = styled.div`
     color: rgb(0, 57, 70);
   }
 `;
+
 const Form = styled.form`
-  position: relative;
   font-family: sans-serif;
   display: flex;
   flex-direction: column;
   margin: 1em 2em;
+  background-color: white;
+  padding: 1em;
+  width: 350px;
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  border-radius: 0;
+  height: 100%;
+  margin: 0;
   & > * {
     width: 100%;
   }
+  .row {
+    flex-direction: row;
+    justify-content: space-between;
+    & > div {
+      width: 47%;
+    }
+  }
+
   div {
     display: flex;
     flex-direction: column;
