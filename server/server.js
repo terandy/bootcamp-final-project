@@ -314,6 +314,17 @@ io.on('connection', socket => {
         socket.emit('send convo', convoID, results);
       });
   });
+  socket.on('video-rtc-offer', obj => {
+    console.log('video-rtc-offer socket listening');
+    obj.members.forEach(member =>
+      socket
+        .to(sockets[member])
+        .emit('video-rtc-answer-request', obj.offer, obj.sender)
+    );
+  });
+  socket.on('video-rtc-answer', obj => {
+    socket.to(sockets[obj.to]).emit('video-rtc-answer-response', obj.answer);
+  });
 
   socket.on('new message', (sender, content, convoID, members) => {
     let time = Date();
