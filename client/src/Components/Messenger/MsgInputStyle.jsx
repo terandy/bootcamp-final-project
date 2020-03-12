@@ -17,12 +17,13 @@ let MsgInputStyle = styled.form`
       cursor: pointer;
     }
   }
+  img {
+    height: 2em;
+    margin: 0.5em;
+  }
   button {
     background-color: transparent;
     border: none;
-    img {
-      height: 2em;
-    }
     &:hover {
       cursor: pointer;
     }

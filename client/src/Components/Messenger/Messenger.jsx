@@ -4,7 +4,6 @@ import MsgDetail from './MsgDetail.jsx';
 import MsgInput from './MsgInput.jsx';
 import { socket } from './../Home/Login';
 import styled from 'styled-components';
-import { useLocation } from 'react-router-dom';
 import ConvoList from './ConvoList.jsx';
 
 let Div = styled.div`
@@ -21,14 +20,13 @@ let MsgView = styled.div`
 `;
 
 let Messenger = props => {
-  let location = useLocation();
   console.log('Messenger.jsx');
   let thisConvoID = props.convoID;
   useEffect(() => {
     if (props.convoID) {
-      socket.emit('getConvo', location.pathname.slice(11));
+      socket.emit('getConvo', thisConvoID);
     }
-  }, [location.pathname]);
+  }, [thisConvoID]);
 
   if (!props.convoID) {
     return (

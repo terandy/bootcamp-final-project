@@ -1,11 +1,14 @@
 //Librairies
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { socket } from './Components/Home/Login.jsx';
+import { pc } from './Components/Video/VideoChat.jsx';
+import { sessionDescription } from './Components/Messenger/MsgInput.jsx';
 //Compononents
 import Messenger from './Components/Messenger/Messenger.jsx';
+import VideoChat from './Components/Video/VideoChat.jsx';
 import Profile from './Components/Profile/Profile.jsx';
 import ActiveUsers from './Components/Active/ActiveUsers.jsx';
 import Home from './Components/Home/Home.jsx';
@@ -33,7 +36,7 @@ let Main = styled.div`
 `;
 
 let App = () => {
-  let dispatch = useDispatch();
+  const dispatch = useDispatch();
   let login = useSelector(state => state.login);
   let conversations = useSelector(state => state.conversations);
   let convosRef = useRef();
@@ -80,6 +83,54 @@ let App = () => {
       console.log('send convo addding');
       dispatch({ type: 'new-convo', content: { convoID, convo } });
     });
+    socket.on('video-rtc-answer-request', (offer, sender, convoID) => {
+      console.log('video-rtc-answer-request');
+      let openVideoChat = window.confirm(
+        sender + ' is requesting a video Chat!'
+      );
+      if (openVideoChat) {
+        dispatch({
+          type: 'set-display-dialog',
+          content: { set: true, convoID: convoID }
+        });
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: true })
+          .then(stream => {
+            console.log('pc.addStream()');
+            pc.addStream(stream);
+          })
+          .catch(err => console.log('error', err));
+        pc.setRemoteDescription(
+          new sessionDescription(offer),
+          () => {
+            pc.createAnswer(
+              answer => {
+                pc.setLocalDescription(
+                  new sessionDescription(answer),
+                  () => {
+                    socket.emit('video-rtc-answer', {
+                      answer: answer,
+                      to: sender
+                    });
+                  },
+                  err => console.log('error', err)
+                );
+              },
+              err => console.log('error', err)
+            );
+          },
+          err => console.log('error', err)
+        );
+      }
+    });
+    pc.onaddstream = obj => {
+      console.log('on add stream', obj);
+      window.testStream = obj.stream;
+      dispatch({ type: 'add-stream', content: obj.stream });
+    };
+    socket.on('video-rtc-answer-response', answer => {
+      dispatch({ type: 'add-video-link' });
+    });
   }, []);
 
   let renderHome = () => {
@@ -88,6 +139,10 @@ let App = () => {
   let renderMessenger = renderData => {
     console.log('render messenger');
     return <Messenger convoID={renderData.match.params.mid} />;
+  };
+  let renderVideoChat = renderData => {
+    console.log('render video');
+    return <VideoChat convoID={renderData.match.params.mid} />;
   };
   let renderMainMessenger = () => {
     console.log('render main messenger');
@@ -137,6 +192,11 @@ let App = () => {
         <TopNav />
         <Main>
           <Route exact={true} path="/" render={renderHome} />
+          <Route
+            exact={true}
+            path="/video-chat/:mid"
+            render={renderData => renderVideoChat(renderData)}
+          />
           <Route
             exact={true}
             path="/messenger/:mid"

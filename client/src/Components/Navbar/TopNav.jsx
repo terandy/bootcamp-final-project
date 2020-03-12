@@ -1,9 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Logout from './../Home/Logout.jsx';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { SIDE_BAR_WIDTH } from '../../data.js';
+import { useHistory } from 'react-router-dom';
 
 let Nav = styled.div`
   display: grid;
@@ -25,6 +26,16 @@ let Nav = styled.div`
   }
 `;
 let Navbar = () => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  let displayDialog = useSelector(state => state.displayDialog);
+  if (displayDialog.set) {
+    history.push('/video-chat/' + displayDialog.convoID);
+    dispatch({
+      type: 'set-display-dialog',
+      content: { set: false, convoID: '' }
+    });
+  }
   let loggedIn = useSelector(state => state.login);
   if (loggedIn) {
     return (

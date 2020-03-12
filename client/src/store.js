@@ -8,11 +8,13 @@ let initialState = {
   activeUsers: {}, // userID:{fname,image,description}
   convoList: {}, // convoID:{label,members}
   convoUsers: {},
-  currentConvo: ''
+  currentConvo: '',
+  streams: [],
+  displayDialog: { set: false, convoID: '' }
 };
 
 let reducer = (state, action) => {
-  return produce(state, newState => {
+  const newState = produce(state, newState => {
     switch (action.type) {
       case 'login':
         newState.login = true;
@@ -53,6 +55,12 @@ let reducer = (state, action) => {
       case 'active-logout':
         delete newState.activeUsers[action.content];
         break;
+      case 'set-display-dialog':
+        newState.displayDialog = {
+          set: action.content.set,
+          convoID: action.content.convoID
+        };
+        break;
       case 'get-message':
         newState.conversations[action.content.convoID].messages.push({
           sender: action.content.sender,
@@ -60,10 +68,16 @@ let reducer = (state, action) => {
           time: action.content.time
         });
         break;
+      case 'add-stream':
+        newState.streams.push(action.content);
+        break;
+      case 'add-video-link':
+        break;
       default:
         return state;
     }
   });
+  return newState;
 };
 
 let store = createStore(
