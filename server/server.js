@@ -35,23 +35,19 @@ app.post('/logout', upload.none(), (req, res) => {
   res.json({ success: true });
 });
 app.post('/login', upload.none(), (req, res) => {
-  console.log('login endpoint');
   let email = req.body.email;
   let pw = req.body.pw;
-  console.log(pw);
   dbo
     .collection('users')
     .findOne({ email: email })
     .then(userInfo => {
       if (userInfo.password === sha1(pw)) {
-        console.log('password match');
         activeUsers[userInfo.email] = userInfo;
         dbo
           .collection('conversations')
           .find({ members: email })
           .toArray()
           .then(results => {
-            console.log(results);
             let convoList = {};
             let convoMembers = [];
             if (results) {
@@ -76,13 +72,10 @@ app.post('/login', upload.none(), (req, res) => {
               .find({ email: { $in: convoMembers } })
               .toArray()
               .then(results => {
-                console.log('results', results);
                 let convoUsers = {};
                 results.forEach(user => {
                   convoUsers[user.email] = user;
                 });
-                console.log('convoUsers', convoUsers);
-                console.log('results', results);
                 let sessionId = '' + Math.floor(Math.random() * 100000000);
                 sessions[sessionId] = email;
                 res.cookie('sid', sessionId);
@@ -104,7 +97,6 @@ app.post('/login', upload.none(), (req, res) => {
     });
 });
 app.post('/register', upload.none(), (req, res) => {
-  console.log('register endpoint');
   let email = req.body.email;
   let pw = req.body.pw;
   let fname = req.body.fname;
@@ -123,7 +115,6 @@ app.post('/register', upload.none(), (req, res) => {
         .find({ members: email })
         .toArray()
         .then(results => {
-          console.log(results);
           let convoList = {};
           if (results) {
             results.forEach(convo => {
@@ -163,7 +154,6 @@ app.post('/register', upload.none(), (req, res) => {
 });
 
 app.post('/edit-profile', upload.single('imgSrc'), (req, res) => {
-  console.log('edit-profile endpoint');
   dbo.collection('users').updateOne(
     { email: req.body.email },
     {
@@ -180,7 +170,6 @@ app.post('/edit-profile', upload.single('imgSrc'), (req, res) => {
 });
 
 app.post('/check-cookies', upload.none(), (req, res) => {
-  console.log('check cookies endpoint');
   let sid = req.cookies.sid;
   if (sessions[sid]) {
     let email = sessions[sid];
@@ -188,14 +177,12 @@ app.post('/check-cookies', upload.none(), (req, res) => {
       .collection('users')
       .findOne({ email: email })
       .then(userInfo => {
-        console.log('password match');
         activeUsers[userInfo.email] = userInfo;
         dbo
           .collection('conversations')
           .find({ members: email })
           .toArray()
           .then(results => {
-            console.log(results);
             let convoList = {};
             let convoMembers = [];
             if (results) {
@@ -220,13 +207,10 @@ app.post('/check-cookies', upload.none(), (req, res) => {
               .find({ email: { $in: convoMembers } })
               .toArray()
               .then(results => {
-                console.log('results', results);
                 let convoUsers = {};
                 results.forEach(user => {
                   convoUsers[user.email] = user;
                 });
-                console.log('convoUsers', convoUsers);
-                console.log('results', results);
                 res.json({
                   success: true,
                   userInfo: userInfo,
@@ -241,7 +225,6 @@ app.post('/check-cookies', upload.none(), (req, res) => {
 });
 app.post('/get-convoID', upload.none(), (req, res) => {
   let users = req.body.users;
-  console.log('/get-convoID endpoint');
   let convoID = sha1(users.join(''));
   let newConvo = { convoID: convoID, messages: [], members: users };
   dbo
@@ -254,7 +237,6 @@ app.post('/get-convoID', upload.none(), (req, res) => {
     .catch(err => {
       //create conversation in mongoDB
       dbo.collection('conversations').insertOne(newConvo);
-      console.log('sockets', sockets);
       users.forEach(user => {
         res.json({ success: true, convoID: convoID });
       });
@@ -273,7 +255,6 @@ app.post('/edit-profile-img', upload.single('imgSrc'), (req, res) => {
         }
       }
     );
-    console.log('image updated');
 
     res.send(JSON.stringify({ success: true, imgSrc: imgSrc }));
     return;
@@ -286,8 +267,6 @@ io.on('connection', socket => {
   console.log('user connected:', socket.id);
 
   socket.on('login', userInfo => {
-    console.log('user logged in:', socket.id);
-    console.log('email', userInfo.email);
     sockets[userInfo.email] = socket.id;
     socket.broadcast.emit('active login', userInfo);
   });
@@ -297,8 +276,6 @@ io.on('connection', socket => {
   });
 
   socket.on('startConvo', (users, convoID) => {
-    console.log('startConvo action');
-    console.log('sockets', sockets);
     let newConvo = { convoID: convoID, messages: [], members: users };
     users.forEach(user => {
       io.to(sockets[user]).emit('new convo', convoID, newConvo);
@@ -306,7 +283,6 @@ io.on('connection', socket => {
   });
 
   socket.on('getConvo', convoID => {
-    console.log('getConvo action');
     dbo
       .collection('conversations')
       .findOne({ convoID: convoID })
@@ -314,23 +290,29 @@ io.on('connection', socket => {
         socket.emit('send convo', convoID, results);
       });
   });
-  socket.on('video-rtc-offer', obj => {
-    console.log('video-rtc-offer socket listening');
-    obj.members.forEach(member =>
-      socket
-        .to(sockets[member])
-        .emit('video-rtc-answer-request', obj.offer, obj.sender, obj.convoID)
-    );
+  socket.on('make-offer', (offer, members, convoID, offerer) => {
+    console.log('server.js socket.on(make-offer)');
+    console.log('offerer', offerer);
+    members.forEach(member => {
+      console.log('member', member);
+      if (member !== offerer) {
+        console.log('offer-made emitting');
+        console.log('socketID', sockets[member]);
+        socket
+          .to(sockets[member])
+          .emit('offer-made', offer, members, convoID, offerer);
+      }
+    });
   });
-  socket.on('video-rtc-answer', obj => {
-    socket.to(sockets[obj.to]).emit('video-rtc-answer-response', obj.answer);
+  socket.on('make-answer', (answer, members, convoID, answerer) => {
+    console.log('server.js socket.on(make-answer)');
+    socket
+      .to(sockets[answerer])
+      .emit('answer-made', answer, members, convoID, answerer);
   });
 
   socket.on('new message', (sender, content, convoID, members) => {
     let time = Date();
-    console.log('new message action');
-    console.log('sockets', sockets);
-    console.log('members', members);
     members.forEach(member => {
       io.to(sockets[member]).emit(
         'get message',

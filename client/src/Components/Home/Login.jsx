@@ -27,7 +27,6 @@ let Login = () => {
     let responseText = await responseBody.text();
     let response = JSON.parse(responseText);
     if (response.success) {
-      console.log('logged in!');
       dispatch({
         type: 'login',
         content: {
@@ -41,7 +40,6 @@ let Login = () => {
       socket.emit('login', response.userInfo);
       history.push('/');
     } else {
-      console.log('error', errorMessage);
       errChange(response.errorMessage);
     }
   };

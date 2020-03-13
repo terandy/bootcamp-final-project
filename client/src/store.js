@@ -10,7 +10,7 @@ let initialState = {
   convoUsers: {},
   currentConvo: '',
   streams: [],
-  displayDialog: { set: false, convoID: '' }
+  answersFrom: {} //webRTC
 };
 
 let reducer = (state, action) => {
@@ -31,6 +31,10 @@ let reducer = (state, action) => {
         break;
       case 'set-current-convo':
         newState.currentConvo = action.content;
+        break;
+      case 'add-to-answersFrom':
+        console.log('add-to-answersFrom', action.content);
+        newState.answersFrom[action.content] = true;
         break;
       case 'new-convo':
         let ac = action.content;
@@ -70,8 +74,6 @@ let reducer = (state, action) => {
         break;
       case 'add-stream':
         newState.streams.push(action.content);
-        break;
-      case 'add-video-link':
         break;
       default:
         return state;

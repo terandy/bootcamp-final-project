@@ -1,33 +1,27 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { socket } from './../Home/Login';
 import styled from 'styled-components';
+import { pc, error } from '../../createOffer.js';
 
 let Div = styled.div`
   height: 93vh;
 `;
-const peerConnection = window.RTCPeerConnection;
-var pc = new peerConnection({
-  iceServers: [
-    {
-      url: 'stun:stun.services.mozilla.com'
-    }
-  ]
-});
 
 let VideoChat = props => {
-  console.log('VideoChat.jsx');
   let dispatch = useDispatch();
   let thisConvoID = props.convoID;
   let streams = useSelector(state => state.streams);
-  let [test, updateTest] = useState('');
   useEffect(() => {
-    // navigator.mediaDevices
-    //   .getUserMedia({ video: true, audio: true })
-    //   .then(stream => {
-    //     updateTest(stream);
-    //     window.cameraStream = stream;
-    //   });
+    navigator.getUserMedia(
+      { video: true, audio: true },
+      stream => {
+        pc.addStream(stream);
+      },
+      error
+    );
+    pc.onaddstream = obj => {
+      dispatch({ type: 'add-stream', content: obj.stream });
+    };
   }, []);
   if (!props.convoID) {
     return <Div></Div>;
@@ -42,25 +36,13 @@ let VideoChat = props => {
             autoPlay
             ref={vid => {
               if (!vid) return;
-              debugger;
               vid.srcObject = stream;
             }}
           />
         );
       })}
-      {/* {test && (
-        <video
-          key={'vid'}
-          autoPlay
-          ref={vid => {
-            if (!vid) return;
-            vid.srcObject = test;
-          }}
-        />
-      )} */}
     </Div>
   );
 };
 
 export default VideoChat;
-export { pc };

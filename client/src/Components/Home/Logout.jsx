@@ -15,7 +15,6 @@ let Logout = props => {
     let responseText = await responseBody.text();
     let response = JSON.parse(responseText);
     if (response.success) {
-      console.log('logged out!');
       dispatch({ type: 'logout', content: userID });
     }
   };

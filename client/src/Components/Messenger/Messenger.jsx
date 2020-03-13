@@ -20,7 +20,6 @@ let MsgView = styled.div`
 `;
 
 let Messenger = props => {
-  console.log('Messenger.jsx');
   let thisConvoID = props.convoID;
   useEffect(() => {
     if (props.convoID) {

@@ -42,7 +42,6 @@ let Register = () => {
       let responseText = await responseBody.text();
       let response = JSON.parse(responseText);
       if (response.success) {
-        console.log('Registered successfully!');
         emailChange('');
         pwChange('');
         confirmPwChange('');
