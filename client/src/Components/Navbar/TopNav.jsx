@@ -26,11 +26,12 @@ let Nav = styled.div`
 `;
 let Navbar = () => {
   let loggedIn = useSelector(state => state.login);
+  let fname = useSelector(state => state.userInfo.fname);
   if (loggedIn) {
     return (
       <Nav>
         <div>
-          <div>Logo</div>
+          <div>Hi {fname}</div>
           <div>
             <Logout />
           </div>

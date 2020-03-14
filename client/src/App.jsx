@@ -1,5 +1,5 @@
 //Librairies
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,6 +37,11 @@ let App = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   let answersFrom = useSelector(state => state.answersFrom);
+  let answersFromRef = useRef();
+  let [answer, setAnswer] = useState(false);
+  let answerRef = useRef();
+  answerRef.current = answer;
+  answersFromRef.current = answersFrom;
   let login = useSelector(state => state.login);
   let conversations = useSelector(state => state.conversations);
   let convosRef = useRef();
@@ -76,37 +81,46 @@ let App = () => {
     socket.on('new convo', (convoID, convo) => {
       dispatch({ type: 'new-convo', content: { convoID, convo } });
     });
-    socket.on('offer-made', (offer, members, convoID, offerer) => {
-      console.log('offer-made listening');
-      let yes = window.confirm(offerer + ' wants to start a video chat');
-      if (yes) {
+    socket.on('offer-made', (offer, members, convoID, offerer, reciever) => {
+      console.log('offer-made listening from', offerer);
+      console.log('offer-made listening to', reciever);
+      if (!answerRef.current) {
+        let yes = window.confirm(offerer + ' wants to start a video chat');
+        setAnswer(yes);
         history.push('/video-chat/' + convoID);
-        pc.setRemoteDescription(
-          new sessionDescription(offer),
-          () => {
-            pc.createAnswer(answer => {
-              pc.setLocalDescription(
-                new sessionDescription(answer),
-                () => {
-                  socket.emit('make-answer', answer, members, convoID, offerer);
-                },
-                error
-              );
-            }, error);
-          },
-          error
-        );
       }
+      pc.setRemoteDescription(
+        new sessionDescription(offer),
+        () => {
+          pc.createAnswer(answer => {
+            pc.setLocalDescription(
+              new sessionDescription(answer),
+              () => {
+                socket.emit(
+                  'make-answer',
+                  answer,
+                  members,
+                  convoID,
+                  offerer,
+                  reciever
+                );
+              },
+              error
+            );
+          }, error);
+        },
+        error
+      );
     });
-    socket.on('answer-made', (answer, members, convoID, answerer) => {
+    socket.on('answer-made', (answer, members, convoID, offerer, reciever) => {
       console.log('answer-made listening');
       pc.setRemoteDescription(
         new sessionDescription(answer),
         () => {
-          if (!answersFrom[answerer]) {
-            createOffer(convoID, members, answerer);
-            console.log('answerer', answerer);
-            dispatch({ type: 'add-to-answersFrom', content: answerer });
+          if (!answersFromRef.current[reciever]) {
+            createOffer(convoID, members, offerer);
+            console.log('answerer', reciever);
+            dispatch({ type: 'add-to-answersFrom', content: reciever });
           }
         },
         error

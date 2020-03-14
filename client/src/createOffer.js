@@ -13,10 +13,11 @@ let error = err => {
 };
 let createOffer = (convoID, members, offerer) => {
   console.log('create offer');
-  pc.createOffer(function(offer) {
+  pc.createOffer(offer => {
     pc.setLocalDescription(
       new sessionDescription(offer),
       () => {
+        console.log('emit make-offer');
         socket.emit('make-offer', offer, members, convoID, offerer);
       },
       error

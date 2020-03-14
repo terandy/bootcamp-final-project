@@ -10,16 +10,23 @@ let Div = styled.div`
 let VideoChat = props => {
   let dispatch = useDispatch();
   let thisConvoID = props.convoID;
+  let [myStream, setMyStream] = useState(false);
   let streams = useSelector(state => state.streams);
+  let me = useSelector(state => state.userInfo.email);
+  let meRef = useRef();
+  meRef.current = me;
   useEffect(() => {
-    navigator.getUserMedia(
-      { video: true, audio: true },
-      stream => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then(stream => {
+        console.log('addstream', meRef.current);
+        setMyStream(stream);
         pc.addStream(stream);
-      },
-      error
-    );
+      })
+      .catch(error);
+
     pc.onaddstream = obj => {
+      console.log('add stream');
       dispatch({ type: 'add-stream', content: obj.stream });
     };
   }, []);
@@ -29,6 +36,17 @@ let VideoChat = props => {
   return (
     <Div>
       <h1>Video Chat</h1>
+      <div>me</div>
+      <video
+        key={'myvid'}
+        autoPlay
+        muted
+        ref={vid => {
+          if (!vid || !myStream) return;
+          vid.srcObject = myStream;
+        }}
+      />
+      <div>other streams</div>
       {streams.map((stream, index) => {
         return (
           <video

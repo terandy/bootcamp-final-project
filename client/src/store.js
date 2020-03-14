@@ -59,12 +59,6 @@ let reducer = (state, action) => {
       case 'active-logout':
         delete newState.activeUsers[action.content];
         break;
-      case 'set-display-dialog':
-        newState.displayDialog = {
-          set: action.content.set,
-          convoID: action.content.convoID
-        };
-        break;
       case 'get-message':
         newState.conversations[action.content.convoID].messages.push({
           sender: action.content.sender,

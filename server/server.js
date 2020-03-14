@@ -297,18 +297,18 @@ io.on('connection', socket => {
       console.log('member', member);
       if (member !== offerer) {
         console.log('offer-made emitting');
-        console.log('socketID', sockets[member]);
+        console.log('to', member);
         socket
           .to(sockets[member])
-          .emit('offer-made', offer, members, convoID, offerer);
+          .emit('offer-made', offer, members, convoID, offerer, member);
       }
     });
   });
-  socket.on('make-answer', (answer, members, convoID, answerer) => {
+  socket.on('make-answer', (answer, members, convoID, offerer, reciever) => {
     console.log('server.js socket.on(make-answer)');
     socket
-      .to(sockets[answerer])
-      .emit('answer-made', answer, members, convoID, answerer);
+      .to(sockets[offerer])
+      .emit('answer-made', answer, members, convoID, offerer, reciever);
   });
 
   socket.on('new message', (sender, content, convoID, members) => {
