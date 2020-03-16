@@ -1,13 +1,13 @@
 //Librairies
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Route, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { socket } from './Components/Home/Login.jsx';
-import createOffer, { pc, sessionDescription, error } from './createOffer.js';
 //Compononents
 import Messenger from './Components/Messenger/Messenger.jsx';
-import VideoChat from './Components/Video/VideoChat.jsx';
+// import VideoChat from './Components/Video/VideoChat.jsx';
+import VideoChatPeer from './Components/Video/VideoChatPeer.jsx';
 import Profile from './Components/Profile/Profile.jsx';
 import ActiveUsers from './Components/Active/ActiveUsers.jsx';
 import Home from './Components/Home/Home.jsx';
@@ -36,12 +36,7 @@ let Main = styled.div`
 let App = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-  let answersFrom = useSelector(state => state.answersFrom);
-  let answersFromRef = useRef();
-  let [answer, setAnswer] = useState(false);
-  let answerRef = useRef();
-  answerRef.current = answer;
-  answersFromRef.current = answersFrom;
+
   let login = useSelector(state => state.login);
   let conversations = useSelector(state => state.conversations);
   let convosRef = useRef();
@@ -81,50 +76,14 @@ let App = () => {
     socket.on('new convo', (convoID, convo) => {
       dispatch({ type: 'new-convo', content: { convoID, convo } });
     });
-    socket.on('offer-made', (offer, members, convoID, offerer, reciever) => {
-      console.log('offer-made listening from', offerer);
-      console.log('offer-made listening to', reciever);
-      if (!answerRef.current) {
-        let yes = window.confirm(offerer + ' wants to start a video chat');
-        setAnswer(yes);
+    socket.on('StartVideoChat', (convoID, user) => {
+      if (
+        window.confirm(
+          user + ' wants to start video chat! Click OK to join conversation.'
+        )
+      ) {
         history.push('/video-chat/' + convoID);
       }
-      pc.setRemoteDescription(
-        new sessionDescription(offer),
-        () => {
-          pc.createAnswer(answer => {
-            pc.setLocalDescription(
-              new sessionDescription(answer),
-              () => {
-                socket.emit(
-                  'make-answer',
-                  answer,
-                  members,
-                  convoID,
-                  offerer,
-                  reciever
-                );
-              },
-              error
-            );
-          }, error);
-        },
-        error
-      );
-    });
-    socket.on('answer-made', (answer, members, convoID, offerer, reciever) => {
-      console.log('answer-made listening');
-      pc.setRemoteDescription(
-        new sessionDescription(answer),
-        () => {
-          if (!answersFromRef.current[reciever]) {
-            createOffer(convoID, members, offerer);
-            console.log('answerer', reciever);
-            dispatch({ type: 'add-to-answersFrom', content: reciever });
-          }
-        },
-        error
-      );
     });
   }, []);
 
@@ -135,7 +94,7 @@ let App = () => {
     return <Messenger convoID={renderData.match.params.mid} />;
   };
   let renderVideoChat = renderData => {
-    return <VideoChat convoID={renderData.match.params.mid} />;
+    return <VideoChatPeer convoID={renderData.match.params.mid} />;
   };
   let renderMainMessenger = () => {
     return <Messenger />;

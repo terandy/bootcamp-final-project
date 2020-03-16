@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { socket } from './../Home/Login';
 import { MsgInputStyle } from './MsgInputStyle.jsx';
 import { Link } from 'react-router-dom';
-import createOffer from '../../createOffer.js';
+// import createOffer from '../../createOffer.js';
 
 let MsgInput = props => {
   let formRef = useRef();
@@ -33,7 +33,7 @@ let MsgInput = props => {
       <div>+</div>
       <Link
         to={'/video-chat/' + convoID}
-        onClick={() => createOffer(convoID, convo.members, user)}
+        // onClick={() => createOffer(convoID, convo.members, user)}
       >
         <img alt="video-chat" src={'/video-chat.png'} />
       </Link>

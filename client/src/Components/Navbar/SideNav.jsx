@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { SIDE_BAR_WIDTH, BG_COLOR } from '../../data.js';
+import { SIDE_BAR_WIDTH } from '../../data.js';
 
 let SideNavStyle = styled.div`
   display: grid;
@@ -34,7 +34,7 @@ let SideNavStyle = styled.div`
   }
 `;
 
-let SideNav = props => {
+let SideNav = () => {
   let me = useSelector(state => state.userInfo['_id']);
   let loggedIn = useSelector(state => state.login);
   return (

@@ -8,9 +8,9 @@ let initialState = {
   activeUsers: {}, // userID:{fname,image,description}
   convoList: {}, // convoID:{label,members}
   convoUsers: {},
-  currentConvo: '',
-  streams: [],
-  answersFrom: {} //webRTC
+  currentConvo: ''
+  // streams: [],
+  // answersFrom: {} //webRTC
 };
 
 let reducer = (state, action) => {
@@ -32,10 +32,10 @@ let reducer = (state, action) => {
       case 'set-current-convo':
         newState.currentConvo = action.content;
         break;
-      case 'add-to-answersFrom':
-        console.log('add-to-answersFrom', action.content);
-        newState.answersFrom[action.content] = true;
-        break;
+      // case 'add-to-answersFrom':
+      //   console.log('add-to-answersFrom', action.content);
+      //   newState.answersFrom[action.content] = true;
+      //   break;
       case 'new-convo':
         let ac = action.content;
         let label;
@@ -66,9 +66,9 @@ let reducer = (state, action) => {
           time: action.content.time
         });
         break;
-      case 'add-stream':
-        newState.streams.push(action.content);
-        break;
+      // case 'add-stream':
+      //   newState.streams.push(action.content);
+      //   break;
       default:
         return state;
     }

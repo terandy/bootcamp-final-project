@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 let MyInfo = styled.div`
@@ -92,19 +92,21 @@ let ConvoList = props => {
           let name = convoUsers[convoList[convoID].label].fname;
           let imgSrc = convoUsers[convoList[convoID].label].imgSrc;
           return (
-            <ListStyle
-              key={index}
-              current={currentConvo === convoID}
-              onClick={() => getConvo(convoID)}
-            >
-              <div>
-                <img
-                  alt=""
-                  src={imgSrc ? imgSrc : '/default-profile-pic.png'}
-                />
-                <p>{name}</p>
-              </div>
-            </ListStyle>
+            <div key={'ConvoList' + index}>
+              <ListStyle
+                current={currentConvo === convoID}
+                onClick={() => getConvo(convoID)}
+              >
+                <div>
+                  <img
+                    alt=""
+                    src={imgSrc ? imgSrc : '/default-profile-pic.png'}
+                  />
+                  <p>{name}</p>
+                </div>
+              </ListStyle>
+              <Link to={'/video-chat/' + convoID}>video</Link>
+            </div>
           );
         })}
       </div>

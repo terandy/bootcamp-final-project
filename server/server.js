@@ -26,6 +26,7 @@ MongoClient.connect(
 let activeUsers = {};
 let sockets = {};
 let sessions = {};
+let clients = {};
 
 app.get('/', (req, res) => {
   res.send('server is running....');
@@ -290,25 +291,77 @@ io.on('connection', socket => {
         socket.emit('send convo', convoID, results);
       });
   });
-  socket.on('make-offer', (offer, members, convoID, offerer) => {
-    console.log('server.js socket.on(make-offer)');
-    console.log('offerer', offerer);
-    members.forEach(member => {
-      console.log('member', member);
-      if (member !== offerer) {
-        console.log('offer-made emitting');
-        console.log('to', member);
-        socket
-          .to(sockets[member])
-          .emit('offer-made', offer, members, convoID, offerer, member);
+  // socket.on('make-offer', (offer, members, convoID, offerer) => {
+  //   console.log('server.js socket.on(make-offer)');
+  //   console.log('offerer', offerer);
+  //   members.forEach(member => {
+  //     console.log('member', member);
+  //     if (member !== offerer) {
+  //       console.log('offer-made emitting');
+  //       console.log('to', member);
+  //       socket
+  //         .to(sockets[member])
+  //         .emit('offer-made', offer, members, convoID, offerer, member);
+  //     }
+  //   });
+  // });
+  // socket.on('make-answer', (answer, members, convoID, offerer, reciever) => {
+  //   console.log('server.js socket.on(make-answer)');
+  //   socket
+  //     .to(sockets[offerer])
+  //     .emit('answer-made', answer, members, convoID, offerer, reciever);
+  // });
+  socket.on('NewClient', (convoID, user) => {
+    console.log('NewClient');
+    dbo
+      .collection('conversations')
+      .findOne({ convoID: convoID })
+      .then(results => {
+        let members = results.members;
+        if (!clients[convoID]) {
+          clients[convoID] = {};
+          clients[convoID].members = members;
+          clients[convoID].clients = [];
+        }
+        if (!clients[convoID].clients.includes(user)) {
+          console.log('createPeer');
+          console.log('socket.id', socket.id);
+          socket.emit('CreatePeer');
+          clients[convoID].clients.push(user);
+          if (clients[convoID].clients.length === 1) {
+            dbo
+              .collection('users')
+              .findOne({ email: user })
+              .then(results => {
+                members.forEach(member => {
+                  console.log('startVideoChst');
+                  socket
+                    .to(sockets[member])
+                    .emit('StartVideoChat', convoID, results.fname);
+                });
+              });
+          }
+        } else {
+          socket.emit('SessionActive');
+        }
+      });
+  });
+
+  socket.on('Offer', (offer, convoID, user) => {
+    console.log('Offer');
+    clients[convoID].members.forEach(member => {
+      if (member !== user) {
+        socket.to(sockets[member]).emit('BackOffer', offer);
       }
     });
   });
-  socket.on('make-answer', (answer, members, convoID, offerer, reciever) => {
-    console.log('server.js socket.on(make-answer)');
-    socket
-      .to(sockets[offerer])
-      .emit('answer-made', answer, members, convoID, offerer, reciever);
+  socket.on('Answer', (answer, convoID, user) => {
+    console.log('Answer');
+    clients[convoID].members.forEach(member => {
+      if (member !== user) {
+        socket.to(sockets[member]).emit('BackAnswer', answer);
+      }
+    });
   });
 
   socket.on('new message', (sender, content, convoID, members) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Logout from './../Home/Logout.jsx';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
