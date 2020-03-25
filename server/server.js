@@ -5,6 +5,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const sha1 = require('sha1');
 const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
 let cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
@@ -229,17 +230,20 @@ app.post('/get-convoID', upload.none(), (req, res) => {
 });
 
 app.post('/get-userInfo', upload.none(), (req, res) => {
-  let userEmail = req.body.userID;
+  let userID = req.body.userID;
+  console.log('email', userID);
   dbo
     .collection('users')
-    .findOne({ email: userEmail })
+    .findOne({ _id: new ObjectID(userID) })
     .then(results => {
+      console.log('results', results);
       res.json({ success: true, userInfo: results });
     })
     .catch(err => {
       console.log('error', err);
     });
 });
+
 app.post('/edit-profile-img', upload.single('imgSrc'), (req, res) => {
   let sid = req.cookies.sid;
   let userID = req.body.userID;
