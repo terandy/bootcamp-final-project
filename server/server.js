@@ -154,22 +154,6 @@ app.post('/register', upload.none(), (req, res) => {
   });
 });
 
-app.post('/edit-profile', upload.single('imgSrc'), (req, res) => {
-  dbo.collection('users').updateOne(
-    { email: req.body.email },
-    {
-      $set: {
-        description: req.body.description,
-        imgSrc: req.body.imgSrc
-      }
-    }
-  );
-  dbo
-    .collection('users')
-    .findOne({ email: req.body.email })
-    .then(results => res.json({ success: true, userInfo: results }));
-});
-
 app.post('/check-cookies', upload.none(), (req, res) => {
   let sid = req.cookies.sid;
   if (sessions[sid]) {
@@ -243,6 +227,19 @@ app.post('/get-convoID', upload.none(), (req, res) => {
       });
     });
 });
+
+app.post('/get-userInfo', upload.none(), (req, res) => {
+  let userEmail = req.body.userID;
+  dbo
+    .collection('users')
+    .findOne({ email: userEmail })
+    .then(results => {
+      res.json({ success: true, userInfo: results });
+    })
+    .catch(err => {
+      console.log('error', err);
+    });
+});
 app.post('/edit-profile-img', upload.single('imgSrc'), (req, res) => {
   let sid = req.cookies.sid;
   let userID = req.body.userID;
@@ -258,6 +255,31 @@ app.post('/edit-profile-img', upload.single('imgSrc'), (req, res) => {
     );
 
     res.send(JSON.stringify({ success: true, imgSrc: imgSrc }));
+    return;
+  } else {
+    res.send(JSON.stringify({ success: false }));
+  }
+});
+app.post('/edit-profile', upload.none(), (req, res) => {
+  let sid = req.cookies.sid;
+  let userID = req.body.userID;
+  let fname = req.body.fname;
+  let lname = req.body.lname;
+  let description = req.body.description;
+  if (sessions[sid] && sessions[sid] === userID) {
+    console.log('hi');
+    dbo.collection('users').updateOne(
+      { email: userID },
+      {
+        $set: {
+          fname: fname,
+          lname: lname,
+          description: description
+        }
+      }
+    );
+
+    res.send(JSON.stringify({ success: true }));
     return;
   } else {
     res.send(JSON.stringify({ success: false }));
@@ -291,26 +313,7 @@ io.on('connection', socket => {
         socket.emit('send convo', convoID, results);
       });
   });
-  // socket.on('make-offer', (offer, members, convoID, offerer) => {
-  //   console.log('server.js socket.on(make-offer)');
-  //   console.log('offerer', offerer);
-  //   members.forEach(member => {
-  //     console.log('member', member);
-  //     if (member !== offerer) {
-  //       console.log('offer-made emitting');
-  //       console.log('to', member);
-  //       socket
-  //         .to(sockets[member])
-  //         .emit('offer-made', offer, members, convoID, offerer, member);
-  //     }
-  //   });
-  // });
-  // socket.on('make-answer', (answer, members, convoID, offerer, reciever) => {
-  //   console.log('server.js socket.on(make-answer)');
-  //   socket
-  //     .to(sockets[offerer])
-  //     .emit('answer-made', answer, members, convoID, offerer, reciever);
-  // });
+
   socket.on('NewClient', (convoID, user) => {
     console.log('NewClient');
     dbo
@@ -323,6 +326,7 @@ io.on('connection', socket => {
           clients[convoID].members = members;
           clients[convoID].clients = [];
         }
+
         if (!clients[convoID].clients.includes(user)) {
           console.log('createPeer');
           console.log('socket.id', socket.id);
