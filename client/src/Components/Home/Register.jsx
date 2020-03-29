@@ -3,10 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Form, { Title, E } from './FormStyle.jsx';
 import styled from 'styled-components';
-import io from 'socket.io-client';
-const socket = io('localhost:5000', {
-  autoConnect: false
-});
+import { socket } from './Login.jsx';
 const Outer = styled.div`
   display: flex;
   justify-content: center;
@@ -52,7 +49,8 @@ let Register = () => {
           content: {
             userInfo: response.userInfo,
             activeUsers: response.activeUsers,
-            convoList: response.convoList
+            convoList: response.convoList,
+            convoUsers: response.convoUsers
           }
         });
         socket.connect();

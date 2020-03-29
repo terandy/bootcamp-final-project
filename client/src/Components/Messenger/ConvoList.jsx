@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 import styled from 'styled-components';
-
+import SearchBar from './SearchBar.jsx';
 let MyInfo = styled.div`
   box-sizing: border-box;
   display: flex;
   align-items: center;
   padding: 0.5em;
+  color: black;
   img {
     height: 4em;
     width: 4em;
@@ -33,6 +34,10 @@ let Container = styled.div`
       display: block;
     }
   }
+  .search {
+    padding: 0;
+    padding-bottom: 1em;
+  }
 `;
 
 let ListStyle = styled.div`
@@ -44,6 +49,7 @@ let ListStyle = styled.div`
     display: flex;
     align-items: center;
     padding: 0 1em;
+    position: relative;
     p {
       background-color: transparent;
     }
@@ -52,11 +58,25 @@ let ListStyle = styled.div`
       background-color: rgb(250, 250, 250);
     }
     img {
+      border: 2px solid;
+      border-color: ${props => (props.active ? 'lightgreen' : 'lightgrey')};
       height: 2em;
       width: 2em;
       border-radius: 50%;
       margin-right: 1em;
       object-fit: cover;
+    }
+    .notification {
+      position: absolute;
+      top: 10px;
+      right: 0px;
+      height: ${props => (props.notify ? '10px' : '0')};
+      width: ${props => (props.notify ? '10px' : '0')};
+      border-radius: 50%;
+      background-color: ${props => (props.notify ? 'purple' : 'transparent')};
+      margin: 0;
+      padding: 0;
+      transition: height ease-in-out 0.2s, width ease-in-out 0.2s;
     }
   }
 `;
@@ -71,9 +91,19 @@ let ConvoList = props => {
   let imgSrc = useSelector(state => state.userInfo.imgSrc);
   let fname = useSelector(state => state.userInfo.fname);
   let lname = useSelector(state => state.userInfo.lname);
-  let getConvo = convoID => {
+  let activeMembers = useSelector(state => state.activeUsers);
+  let notifications = useSelector(state => state.notifications);
+  let [filter, setFilter] = useState('');
+  let getConvo = (convoID, userID) => {
     dispatch({ type: 'set-current-convo', content: convoID });
+    dispatch({ type: 'remove-notification', content: userID });
     history.push('/messenger/' + convoID);
+  };
+  let onSearch = input => {
+    setFilter('');
+  };
+  let onChange = input => {
+    setFilter(input);
   };
   if (!convoList) {
     return <div></div>;
@@ -81,33 +111,54 @@ let ConvoList = props => {
   return (
     <Container loggedIn={loggedIn}>
       <div className="box">
-        <MyInfo>
-          <img alt="" src={imgSrc ? imgSrc : '/default-profile-pic.png'} />
-          <div>
-            {fname} {lname}
-          </div>
-        </MyInfo>
-        <h2>Conversations</h2>
-        {Object.keys(convoList).map((convoID, index) => {
-          let name = convoUsers[convoList[convoID].label].fname;
-          let imgSrc = convoUsers[convoList[convoID].label].imgSrc;
-          return (
-            <div key={'ConvoList' + index}>
-              <ListStyle
-                current={currentConvo === convoID}
-                onClick={() => getConvo(convoID)}
-              >
-                <div>
-                  <img
-                    alt=""
-                    src={imgSrc ? imgSrc : '/default-profile-pic.png'}
-                  />
-                  <p>{name}</p>
-                </div>
-              </ListStyle>
-              <Link to={'/video-chat/' + convoID}>video</Link>
+        <Link to={'/profile'} style={{ textDecoration: 'none' }}>
+          <MyInfo>
+            <img alt="" src={imgSrc ? imgSrc : '/default-profile-pic.png'} />
+            <div>
+              {fname} {lname}
             </div>
-          );
+          </MyInfo>
+        </Link>
+        <h2>Conversations</h2>
+        <div className="search">
+          <SearchBar
+            submitFunction={onSearch}
+            changeValue={onChange}
+            placeholder={'Search convos...'}
+          />
+        </div>
+        {Object.keys(convoList).map((convoID, index) => {
+          let userID = convoList[convoID].label;
+          let name = convoUsers[userID].fname;
+          let imgSrc = convoUsers[userID].imgSrc;
+          if (notifications[userID] && currentConvo === convoID) {
+            dispatch({ type: 'remove-notification', content: userID });
+          }
+          if (
+            !filter === '' ||
+            name.toUpperCase().includes(filter.toUpperCase())
+          ) {
+            return (
+              <div key={'ConvoList' + index}>
+                <ListStyle
+                  current={currentConvo === convoID}
+                  onClick={() => getConvo(convoID, userID)}
+                  notify={notifications[userID]}
+                  active={activeMembers[userID]}
+                >
+                  <div>
+                    <img
+                      alt=""
+                      src={imgSrc ? imgSrc : '/default-profile-pic.png'}
+                    />
+                    <p>{name}</p>
+                    <div className="notification"></div>
+                  </div>
+                </ListStyle>
+                f
+              </div>
+            );
+          }
         })}
       </div>
     </Container>

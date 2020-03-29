@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { SIDE_BAR_WIDTH } from '../../data.js';
 
 let SideNavStyle = styled.div`
-  display: grid;
-  grid-area: sideNav;
+  display: ${props => (props.logggedIn ? 'block' : 'none')};
   z-index: 100;
   background-color: rgb(100, 100, 100);
+  .notify {
+    position: absolute;
+    top: 10px;
+    right: 1em;
+    height: ${props => (props.notify ? '10px' : '0')};
+    width: ${props => (props.notify ? '10px' : '0')};
+    border-radius: 50%;
+    background-color: ${props => (props.notify ? 'purple' : 'transparent')};
+    margin: 0;
+    padding: 0;
+    transition: height ease-in-out 0.2s, width ease-in-out 0.2s;
+  }
   & > div {
-    position: fixed;
     width: ${SIDE_BAR_WIDTH}px;
     text-align: center;
     a {
@@ -24,6 +35,7 @@ let SideNavStyle = styled.div`
       box-sizing: border-box;
       padding: 1em;
       margin-bottom: 2em;
+      position: relative;
       &:hover {
         padding: 0.5em;
       }
@@ -35,10 +47,24 @@ let SideNavStyle = styled.div`
 `;
 
 let SideNav = () => {
+  let location = useLocation();
   let me = useSelector(state => state.userInfo['_id']);
   let loggedIn = useSelector(state => state.login);
+  let notifications = useSelector(state => state.notifications);
+  let [notify, setNotify] = useState(false);
+  useEffect(() => {
+    if (
+      Object.values(notifications).some(x => x === true) &&
+      location.pathname.slice(0, 10) !== '/messenger'
+    ) {
+      console.log('location', location.pathname.slice(0, 10));
+      setNotify(true);
+    } else {
+      setNotify(false);
+    }
+  }, [notifications]);
   return (
-    <SideNavStyle props={loggedIn}>
+    <SideNavStyle logggedIn={loggedIn} notify={notify}>
       <div>
         <Link to="/active-users">
           <div>
@@ -46,7 +72,7 @@ let SideNav = () => {
             Discover
           </div>
         </Link>
-        <Link to={'/profile/' + me}>
+        <Link to={'/profile'}>
           <div>
             <img alt="" src={'/edit-profile.png'} />
             Profile
@@ -56,6 +82,7 @@ let SideNav = () => {
           <div>
             <img alt="" src={'/messages.png'} />
             Chat
+            <div className="notify"></div>
           </div>
         </Link>
       </div>

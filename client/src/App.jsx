@@ -1,14 +1,14 @@
 //Librairies
 import React, { useEffect, useRef } from 'react';
-import { Route, useHistory } from 'react-router-dom';
+import { Route, useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { socket } from './Components/Home/Login.jsx';
 //Compononents
 import Messenger from './Components/Messenger/Messenger.jsx';
-// import VideoChat from './Components/Video/VideoChat.jsx';
 import VideoChatPeer from './Components/Video/VideoChatPeer.jsx';
 import Profile from './Components/Profile/Profile.jsx';
+import OtherProfile from './Components/Profile/OtherProfile.jsx';
 import ActiveUsers from './Components/Active/ActiveUsers.jsx';
 import Home from './Components/Home/Home.jsx';
 import Login from './Components/Home/Login.jsx';
@@ -42,8 +42,16 @@ let App = () => {
   let convosRef = useRef();
   convosRef.current = conversations;
 
-  let getMessageFunction = (convoID, sender, content, time, users) => {
+  let getMessageFunction = (
+    convoID,
+    sender,
+    content,
+    time,
+    users,
+    arrayOfUsersInfo
+  ) => {
     if (!convosRef.current[convoID]) {
+      console.log('no convosRef.current');
       let newConvo = {
         convoID: convoID,
         messages: [],
@@ -51,7 +59,11 @@ let App = () => {
       };
       dispatch({
         type: 'new-convo',
-        content: { convoID: convoID, convo: newConvo }
+        content: {
+          convoID: convoID,
+          convo: newConvo,
+          arrayOfMemberInfo: arrayOfUsersInfo
+        }
       });
     }
     dispatch({
@@ -67,14 +79,33 @@ let App = () => {
     socket.on('active logout', userID => {
       dispatch({ type: 'active-logout', content: userID });
     });
-    socket.on('send convo', (convoID, convo) => {
-      dispatch({ type: 'new-convo', content: { convoID, convo } });
+    socket.on('send convo', (convoID, convo, arrayOfMemberInfo) => {
+      console.log('send convo');
+      dispatch({
+        type: 'new-convo',
+        content: { convoID, convo, arrayOfMemberInfo }
+      });
     });
-    socket.on('get message', (convoID, sender, content, time, users) => {
-      getMessageFunction(convoID, sender, content, time, users);
-    });
-    socket.on('new convo', (convoID, convo) => {
-      dispatch({ type: 'new-convo', content: { convoID, convo } });
+    socket.on(
+      'get message',
+      (convoID, sender, content, time, users, arrayOfUsersInfo) => {
+        console.log('get message in app.jsx');
+        getMessageFunction(
+          convoID,
+          sender,
+          content,
+          time,
+          users,
+          arrayOfUsersInfo
+        );
+      }
+    );
+    socket.on('new convo', (convoID, convo, arrayOfMemberInfo) => {
+      console.log('new convo in App.jsx');
+      dispatch({
+        type: 'new-convo',
+        content: { convoID, convo, arrayOfMemberInfo }
+      });
     });
     socket.on('StartVideoChat', (convoID, user) => {
       if (
@@ -99,8 +130,11 @@ let App = () => {
   let renderMainMessenger = () => {
     return <Messenger />;
   };
-  let renderProfile = renderData => {
-    return <Profile userID={renderData.match.params.userID} />;
+  let renderProfile = () => {
+    return <Profile />;
+  };
+  let renderViewProfile = renderData => {
+    return <OtherProfile userID={renderData.match.params.userID} />;
   };
   let renderActiveUsers = () => {
     return <ActiveUsers />;
@@ -112,6 +146,7 @@ let App = () => {
     return <Register />;
   };
   let checkCookies = async () => {
+    console.log('checkCookies in App.jsx');
     let responseBody = await fetch('/check-cookies', { method: 'POST' });
     let responseText = await responseBody.text();
     let response = JSON.parse(responseText);
@@ -129,9 +164,11 @@ let App = () => {
       });
     }
   };
-  if (!login) {
-    checkCookies();
-  }
+  useEffect(() => {
+    if (!login) {
+      checkCookies();
+    }
+  }, []);
   return (
     <Container loggedIn={login}>
       <SideNav />
@@ -151,12 +188,13 @@ let App = () => {
         <Route
           exact={true}
           path="/messenger"
-          render={renderData => renderMainMessenger()}
+          render={() => renderMainMessenger()}
         />
+        <Route exact={true} path="/profile" render={() => renderProfile()} />
         <Route
           exact={true}
-          path="/profile/:userID"
-          render={renderData => renderProfile(renderData)}
+          path="/view-profile/:userID"
+          render={renderData => renderViewProfile(renderData)}
         />
         <Route exact={true} path="/active-users" render={renderActiveUsers} />
         <Route exact={true} path="/login" render={renderLogin} />

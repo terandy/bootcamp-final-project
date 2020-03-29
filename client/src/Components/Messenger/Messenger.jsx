@@ -23,6 +23,7 @@ let Messenger = props => {
   let thisConvoID = props.convoID;
   useEffect(() => {
     if (props.convoID) {
+      console.log('getConvo', props.convoID);
       socket.emit('getConvo', thisConvoID);
     }
   }, [thisConvoID]);

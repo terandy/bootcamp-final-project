@@ -1,26 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import Peer from 'simple-peer';
 import { socket } from '../Home/Login.jsx';
 import MsgDetail from '../Messenger/MsgDetail.jsx';
-import MsgDisplay from '../Messenger/MsgDisplay.jsx';
-import MsgInput from '../Messenger/MsgInput.jsx';
 let Div = styled.div`
   display: flex;
   height: 100%;
 `;
-let MsgView = styled.div`
-  background-color: white;
-  border-radius: 1em;
-  display: grid;
-  grid-template-rows: 1fr 100px;
-`;
+let Button = styled.button``;
+let Video1 = styled.video``;
+let Video2 = styled.video``;
 let VideoChatPeer = props => {
+  let history = useHistory();
   let convoID = props.convoID;
   let [myStream, setMyStream] = useState(false);
   let [otherStream, setOtherStream] = useState(false);
   let user = useSelector(state => state.userInfo.email);
+  let otherUser = useSelector(state => state.convoList[convoID].label);
   let userRef = useRef();
   userRef.current = user;
   let [client, setClient] = useState({});
@@ -53,6 +51,7 @@ let VideoChatPeer = props => {
           peer.on('signal', data => {
             console.log('peer on signal');
             if (!clientRef.current.gotAnswer) {
+              console.log('Offer');
               socket.emit('Offer', data, convoID, userRef.current);
             }
           });
@@ -81,6 +80,7 @@ let VideoChatPeer = props => {
         let RemovePeer = () => {
           if (client.peer) {
             client.peer.destroy();
+            setClient({});
           }
         };
 
@@ -89,19 +89,30 @@ let VideoChatPeer = props => {
         socket.on('SessionActive', () => console.log('already active'));
         socket.on('CreatePeer', MakePeer);
         socket.on('Disconnect', RemovePeer);
+        socket.on('LeaveChat', RemovePeer);
       })
       .catch(err => {
         console.log('error', err);
       });
   }, []);
+  useEffect(() => {
+    socket.on('leaveVideoChat', () => {
+      console.log('otherUser left conversation');
+      setOtherStream(false);
+    });
+  }, []);
+  let leaveVideoChat = () => {
+    socket.emit('LeaveChat', otherUser, user, convoID);
+    myStream.getTracks().map(val => {
+      val.stop();
+    });
+
+    history.push('/messenger');
+  };
   return (
     <div>
       <MsgDetail convoID={convoID} />
       <Div>
-        <MsgView>
-          <MsgDisplay convoID={convoID} />
-          <MsgInput convoID={convoID} />
-        </MsgView>
         <div>
           <div>me</div>
           <video
@@ -113,6 +124,7 @@ let VideoChatPeer = props => {
               vid.srcObject = myStream;
             }}
           />
+          <Button onClick={leaveVideoChat}>Leave Video Chat</Button>
           <div>others</div>
           <video
             key={'othervid'}

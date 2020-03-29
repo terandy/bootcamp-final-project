@@ -105,47 +105,36 @@ app.post('/register', upload.none(), (req, res) => {
   let lname = req.body.lname;
   dbo.collection('users').findOne({ email: email }, (err, userInfo) => {
     if (!userInfo) {
-      dbo.collection('users').insertOne({
-        email: email,
-        password: sha1(pw),
-        fname: fname,
-        lname: lname,
-        type: 'patient'
-      });
       dbo
-        .collection('conversations')
-        .find({ members: email })
-        .toArray()
+        .collection('users')
+        .insertOne({
+          email: email,
+          password: sha1(pw),
+          fname: fname,
+          lname: lname,
+          type: 'patient'
+        })
         .then(results => {
-          let convoList = {};
-          if (results) {
-            results.forEach(convo => {
-              let label =
-                convo.members[0] === email
-                  ? convo.members[1]
-                  : convo.members[0];
-              convoList[convo.convoID] = {
-                label: label,
-                members: convo.members
-              };
-            });
-          }
-          let sessionId = '' + Math.floor(Math.random() * 100000000);
-          sessions[sessionId] = email;
-          res.cookie('sid', sessionId);
-          res.json({
-            success: true,
-            userInfo: {
-              email: email,
-              password: sha1(pw),
-              fname: fname,
-              lname: lname,
-              type: 'patient'
-            },
-            activeUsers: activeUsers,
-            convoList: convoList
-          });
+          console.log('activeUsers', activeUsers);
+          activeUsers[email] = { email, fname, lname, _id: results.insertedId };
+          console.log('activeUsers', activeUsers);
         });
+      let sessionId = '' + Math.floor(Math.random() * 100000000);
+      sessions[sessionId] = email;
+      res.cookie('sid', sessionId);
+      res.json({
+        success: true,
+        userInfo: {
+          email: email,
+          password: sha1(pw),
+          fname: fname,
+          lname: lname,
+          type: 'patient'
+        },
+        activeUsers: activeUsers,
+        convoList: {},
+        convoUsers: {}
+      });
     } else {
       res.json({
         success: false,
@@ -218,13 +207,16 @@ app.post('/get-convoID', upload.none(), (req, res) => {
     .findOne({ members: { $all: users } })
     .then(results => {
       //conversation already exists, just go to page
-      res.json({ success: true, convoID: results.convoID });
+      res.json({ success: true, new: false, convoID: results.convoID });
     })
     .catch(err => {
       //create conversation in mongoDB
       dbo.collection('conversations').insertOne(newConvo);
-      users.forEach(user => {
-        res.json({ success: true, convoID: convoID });
+      res.json({
+        success: true,
+        convoID: convoID,
+        new: true,
+        newConvo: newConvo
       });
     });
 });
@@ -257,7 +249,6 @@ app.post('/edit-profile-img', upload.single('imgSrc'), (req, res) => {
         }
       }
     );
-
     res.send(JSON.stringify({ success: true, imgSrc: imgSrc }));
     return;
   } else {
@@ -282,7 +273,6 @@ app.post('/edit-profile', upload.none(), (req, res) => {
         }
       }
     );
-
     res.send(JSON.stringify({ success: true }));
     return;
   } else {
@@ -303,18 +293,37 @@ io.on('connection', socket => {
   });
 
   socket.on('startConvo', (users, convoID) => {
+    console.log('startConvo');
     let newConvo = { convoID: convoID, messages: [], members: users };
-    users.forEach(user => {
-      io.to(sockets[user]).emit('new convo', convoID, newConvo);
-    });
+    dbo
+      .collection('users')
+      .find({ email: { $in: users } })
+      .toArray()
+      .then(results => {
+        results.forEach(user => {
+          io.to(sockets[user.email]).emit(
+            'new convo',
+            convoID,
+            newConvo,
+            results //Array of member info
+          );
+        });
+      });
   });
 
   socket.on('getConvo', convoID => {
+    console.log('getConvo server.js');
     dbo
       .collection('conversations')
       .findOne({ convoID: convoID })
-      .then(results => {
-        socket.emit('send convo', convoID, results);
+      .then(convo => {
+        dbo
+          .collection('users')
+          .find({ email: { $in: convo.members } })
+          .toArray()
+          .then(results => {
+            socket.emit('send convo', convoID, convo, results);
+          });
       });
   });
 
@@ -373,30 +382,44 @@ io.on('connection', socket => {
   });
 
   socket.on('new message', (sender, content, convoID, members) => {
+    console.log('new message');
     let time = Date();
-    members.forEach(member => {
-      io.to(sockets[member]).emit(
-        'get message',
-        convoID,
-        sender,
-        content,
-        time,
-        members
-      );
-    });
-    dbo.collection('conversations').updateOne(
-      { convoID: convoID },
-      {
-        $push: { messages: { sender: sender, content: content, time } }
-      }
-    );
+    dbo
+      .collection('users')
+      .find({ email: { $in: members } })
+      .toArray()
+      .then(results => {
+        results.forEach(member => {
+          console.log('member', member);
+          io.to(sockets[member.email]).emit(
+            'get message',
+            convoID,
+            sender,
+            content,
+            time,
+            members,
+            results //arrayOfMembersInfo
+          );
+        });
+        dbo.collection('conversations').updateOne(
+          { convoID: convoID },
+          {
+            $push: { messages: { sender: sender, content: content, time } }
+          }
+        );
+      });
   });
   socket.on('logout', userID => {
     delete activeUsers[userID];
     delete sockets[userID];
     io.emit('active logout', userID);
   });
-
+  socket.on('LeaveChat', (otherUser, leaver, convoID) => {
+    io.to(sockets[otherUser]).emit('leaveVideoChat');
+    clients[convoID].clients = clients[convoID].clients.filter(
+      user => user !== leaver
+    );
+  });
   socket.on('disconnect', () => {
     console.log('user disconnected: ', socket.id);
   });

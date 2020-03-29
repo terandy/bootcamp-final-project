@@ -7,15 +7,20 @@ let initialState = {
   conversations: {}, // convoID:{members,messages}, members=[userID,..], messages=[{content,sender,time},..]
   activeUsers: {}, // userID:{fname,image,description}
   convoList: {}, // convoID:{label,members}
-  convoUsers: {},
-  currentConvo: ''
-  // streams: [],
-  // answersFrom: {} //webRTC
+  convoUsers: {}, // userID :{userInformation} <--used in ConvoList
+  currentConvo: '',
+  notifications: {}, //{userID:boolean}
+  otherUserInfo: {}
 };
 
 let reducer = (state, action) => {
   const newState = produce(state, newState => {
     switch (action.type) {
+      case 'edit-profile':
+        newState.userInfo.fname = action.content.fname;
+        newState.userInfo.lname = action.content.lname;
+        newState.userInfo.description = action.content.description;
+        break;
       case 'login':
         newState.login = true;
         newState.userInfo = action.content.userInfo;
@@ -32,10 +37,6 @@ let reducer = (state, action) => {
       case 'set-current-convo':
         newState.currentConvo = action.content;
         break;
-      // case 'add-to-answersFrom':
-      //   console.log('add-to-answersFrom', action.content);
-      //   newState.answersFrom[action.content] = true;
-      //   break;
       case 'new-convo':
         let ac = action.content;
         let label;
@@ -44,17 +45,25 @@ let reducer = (state, action) => {
         } else {
           label = ac.convo.members[1];
         }
-        newState.login = true;
+        newState.notifications[label] = true;
         newState.conversations[ac.convoID] = ac.convo;
         newState.convoList[ac.convoID] = {
           label: label,
           members: ac.convo.members
         };
+
+        ac.arrayOfMemberInfo.forEach(member => {
+          if (member.info !== state.userInfo.email) {
+            newState.convoUsers[member.email] = member;
+          }
+        });
+
         break;
-      case 'logout':
-        return initialState;
       case 'active-login':
         newState.activeUsers[action.content.email] = action.content;
+        break;
+      case 'remove-notification':
+        newState.notifications[action.content] = false;
         break;
       case 'active-logout':
         delete newState.activeUsers[action.content];
@@ -65,10 +74,13 @@ let reducer = (state, action) => {
           content: action.content.content,
           time: action.content.time
         });
+        newState.notifications[action.content.sender] = true;
         break;
-      // case 'add-stream':
-      //   newState.streams.push(action.content);
-      //   break;
+      case 'add-profile':
+        newState.otherUserInfo[action.content._id] = action.content;
+        break;
+      case 'logout':
+        return initialState;
       default:
         return state;
     }

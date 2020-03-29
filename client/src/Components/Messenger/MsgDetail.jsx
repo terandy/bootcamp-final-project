@@ -2,11 +2,20 @@ import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { ListStyle } from './ConvoList.jsx';
+import { Link } from 'react-router-dom';
+import SearchBar from './SearchBar.jsx';
 
 let Container = styled.div`
   background-color: white;
   border-bottom: lightgrey 1px solid;
   overflow: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .search {
+    padding: 0;
+    padding-right: 1em;
+  }
 `;
 
 let MsgDetail = props => {
@@ -29,10 +38,15 @@ let MsgDetail = props => {
         let imgSrc = convoUsers[user].imgSrc;
         return (
           <ListStyle key={index}>
-            <div>
-              <img alt="" src={imgSrc ? imgSrc : '/default-profile-pic.png'} />
-              <p>{name}</p>
-            </div>
+            <Link to={'/view-profile/' + convoUsers[user]._id}>
+              <div>
+                <img
+                  alt=""
+                  src={imgSrc ? imgSrc : '/default-profile-pic.png'}
+                />
+                <p>{name}</p>
+              </div>
+            </Link>
           </ListStyle>
         );
       })}
