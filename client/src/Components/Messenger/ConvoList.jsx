@@ -26,12 +26,17 @@ let Container = styled.div`
     height: 100%;
     border-radius: 0.5em;
     padding: 0.5em;
+    display: flex;
+    flex-direction: column;
     h2 {
       font-size: 1em;
     }
     a {
       width: 100%;
       display: block;
+    }
+    .list-convos {
+      overflow: scroll;
     }
   }
   .search {
@@ -127,39 +132,40 @@ let ConvoList = props => {
             placeholder={'Search convos...'}
           />
         </div>
-        {Object.keys(convoList).map((convoID, index) => {
-          let userID = convoList[convoID].label;
-          let name = convoUsers[userID].fname;
-          let imgSrc = convoUsers[userID].imgSrc;
-          if (notifications[userID] && currentConvo === convoID) {
-            dispatch({ type: 'remove-notification', content: userID });
-          }
-          if (
-            !filter === '' ||
-            name.toUpperCase().includes(filter.toUpperCase())
-          ) {
-            return (
-              <div key={'ConvoList' + index}>
-                <ListStyle
-                  current={currentConvo === convoID}
-                  onClick={() => getConvo(convoID, userID)}
-                  notify={notifications[userID]}
-                  active={activeMembers[userID]}
-                >
-                  <div>
-                    <img
-                      alt=""
-                      src={imgSrc ? imgSrc : '/default-profile-pic.png'}
-                    />
-                    <p>{name}</p>
-                    <div className="notification"></div>
-                  </div>
-                </ListStyle>
-                f
-              </div>
-            );
-          }
-        })}
+        <div className="list-convos">
+          {Object.keys(convoList).map((convoID, index) => {
+            let userID = convoList[convoID].label;
+            let name = convoUsers[userID].fname;
+            let imgSrc = convoUsers[userID].imgSrc;
+            if (notifications[userID] && currentConvo === convoID) {
+              dispatch({ type: 'remove-notification', content: userID });
+            }
+            if (
+              !filter === '' ||
+              name.toUpperCase().includes(filter.toUpperCase())
+            ) {
+              return (
+                <div key={'ConvoList' + index}>
+                  <ListStyle
+                    current={currentConvo === convoID}
+                    onClick={() => getConvo(convoID, userID)}
+                    notify={notifications[userID]}
+                    active={activeMembers[userID]}
+                  >
+                    <div>
+                      <img
+                        alt=""
+                        src={imgSrc ? imgSrc : '/default-profile-pic.png'}
+                      />
+                      <p>{name}</p>
+                      <div className="notification"></div>
+                    </div>
+                  </ListStyle>
+                </div>
+              );
+            }
+          })}
+        </div>
       </div>
     </Container>
   );

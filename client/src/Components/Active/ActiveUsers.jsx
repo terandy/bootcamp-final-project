@@ -5,6 +5,9 @@ import styled from 'styled-components';
 let H1 = styled.h1`
   margin: 0.5em;
 `;
+let Container = styled.div`
+  overflow: scroll;
+`;
 let ActiveUserStyle = styled.div`
   display: flex;
   align-items: center;
@@ -33,16 +36,18 @@ let ActiveUsers = () => {
   return (
     <div>
       <H1>Active Users</H1>
-      {Object.keys(activeUsers).map((userID, index) => {
-        if (userID !== me) {
-          return (
-            <ActiveUserStyle key={index} onClick={() => viewProfile(userID)}>
-              <img alt="" src={activeUsers[userID].imgSrc} />
-              <div>{activeUsers[userID].fname}</div>
-            </ActiveUserStyle>
-          );
-        }
-      })}
+      <Container>
+        {Object.keys(activeUsers).map((userID, index) => {
+          if (userID !== me) {
+            return (
+              <ActiveUserStyle key={index} onClick={() => viewProfile(userID)}>
+                <img alt="" src={activeUsers[userID].imgSrc} />
+                <div>{activeUsers[userID].fname}</div>
+              </ActiveUserStyle>
+            );
+          }
+        })}
+      </Container>
     </div>
   );
 };
