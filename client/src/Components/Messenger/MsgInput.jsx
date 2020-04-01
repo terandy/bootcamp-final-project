@@ -30,10 +30,6 @@ let MsgInput = props => {
   };
   return (
     <MsgInputStyle onSubmit={submitHandler} ref={formRef}>
-      <div>+</div>
-      <Link to={'/video-chat/' + convoID}>
-        <img alt="video-chat" src={'/video-chat.png'} />
-      </Link>
       <textarea
         rows="1"
         type="text"

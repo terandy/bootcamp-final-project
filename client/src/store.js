@@ -10,7 +10,8 @@ let initialState = {
   convoUsers: {}, // userID :{userInformation} <--used in ConvoList
   currentConvo: '',
   notifications: {}, //{userID:boolean}
-  otherUserInfo: {}
+  otherUserInfo: {},
+  videoChat: false //if a video chat is open, do not display navbars
 };
 
 let reducer = (state, action) => {
@@ -20,6 +21,9 @@ let reducer = (state, action) => {
         newState.userInfo.fname = action.content.fname;
         newState.userInfo.lname = action.content.lname;
         newState.userInfo.description = action.content.description;
+        break;
+      case 'videoChat':
+        newState.videoChat = action.content;
         break;
       case 'login':
         newState.login = true;

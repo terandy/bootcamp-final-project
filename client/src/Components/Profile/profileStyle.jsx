@@ -51,7 +51,9 @@ let EditPencil = styled.div`
 let Container = styled.div`
   position: relative;
   background-color: white;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 2em;
   height: 100%;
   width: 100%;
   max-width: 800px;

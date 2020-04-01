@@ -18,20 +18,20 @@ import TopNav from './Components/Navbar/TopNav.jsx';
 import { SIDE_BAR_WIDTH, TOP_BAR_HEIGHT, BG_COLOR } from './data.js';
 
 let Container = styled.div`
-  display: grid;
-  grid-template-areas: ${props =>
-    props.loggedIn
-      ? "'topNav topNav' 'sideNav main'"
-      : "'topNav topNav''main main'"};
-
-  grid-template-rows: ${TOP_BAR_HEIGHT}vh 1fr;
-  grid-template-columns: ${SIDE_BAR_WIDTH}px 1fr;
+  & > div {
+    display: flex;
+  }
+`;
+let MainContainer = styled.div`
   height: 100vh;
+  width: 100vw;
 `;
 let Main = styled.div`
-  display: grid;
-  grid-area: main;
-  background-color: ${BG_COLOR};
+  box-sizing: border-box;
+  padding-top: ${TOP_BAR_HEIGHT}px;
+  padding-left: ${SIDE_BAR_WIDTH}px;
+  width: 100%;
+  height: 100%;
 `;
 let App = () => {
   const history = useHistory();
@@ -171,35 +171,37 @@ let App = () => {
   }, []);
   return (
     <Container loggedIn={login}>
-      <SideNav />
       <TopNav />
-      <Main>
-        <Route exact={true} path="/" render={renderHome} />
-        <Route
-          exact={true}
-          path="/video-chat/:mid"
-          render={renderData => renderVideoChat(renderData)}
-        />
-        <Route
-          exact={true}
-          path="/messenger/:mid"
-          render={renderData => renderMessenger(renderData)}
-        />
-        <Route
-          exact={true}
-          path="/messenger"
-          render={() => renderMainMessenger()}
-        />
-        <Route exact={true} path="/profile" render={() => renderProfile()} />
-        <Route
-          exact={true}
-          path="/view-profile/:userID"
-          render={renderData => renderViewProfile(renderData)}
-        />
-        <Route exact={true} path="/active-users" render={renderActiveUsers} />
-        <Route exact={true} path="/login" render={renderLogin} />
-        <Route exact={true} path="/register" render={renderRegister} />
-      </Main>
+      <MainContainer>
+        <SideNav />
+        <Main>
+          <Route exact={true} path="/" render={renderHome} />
+          <Route
+            exact={true}
+            path="/video-chat/:mid"
+            render={renderData => renderVideoChat(renderData)}
+          />
+          <Route
+            exact={true}
+            path="/messenger/:mid"
+            render={renderData => renderMessenger(renderData)}
+          />
+          <Route
+            exact={true}
+            path="/messenger"
+            render={() => renderMainMessenger()}
+          />
+          <Route exact={true} path="/profile" render={() => renderProfile()} />
+          <Route
+            exact={true}
+            path="/view-profile/:userID"
+            render={renderData => renderViewProfile(renderData)}
+          />
+          <Route exact={true} path="/active-users" render={renderActiveUsers} />
+          <Route exact={true} path="/login" render={renderLogin} />
+          <Route exact={true} path="/register" render={renderRegister} />
+        </Main>
+      </MainContainer>
     </Container>
   );
 };

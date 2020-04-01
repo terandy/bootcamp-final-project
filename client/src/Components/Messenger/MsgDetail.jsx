@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { ListStyle } from './ConvoList.jsx';
 import { Link } from 'react-router-dom';
-import SearchBar from './SearchBar.jsx';
 
 let Container = styled.div`
   background-color: white;
@@ -15,6 +14,16 @@ let Container = styled.div`
   .search {
     padding: 0;
     padding-right: 1em;
+  }
+`;
+let VideoChat = styled.div`
+  height: 100%;
+  padding: 0;
+  padding-right: 1em;
+  a {
+    img {
+      height: 80%;
+    }
   }
 `;
 
@@ -50,6 +59,11 @@ let MsgDetail = props => {
           </ListStyle>
         );
       })}
+      <VideoChat>
+        <Link to={'/video-chat/' + props.convoID}>
+          <img alt="video-chat" src={'/video-chat.png'} />
+        </Link>
+      </VideoChat>
     </Container>
   );
 };

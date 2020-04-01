@@ -334,24 +334,28 @@ io.on('connection', socket => {
       .findOne({ convoID: convoID })
       .then(results => {
         let members = results.members;
+        //Client object keeps track of members who have established a connection
+        //If it doesn't exist create it.
         if (!clients[convoID]) {
           clients[convoID] = {};
-          clients[convoID].members = members;
-          clients[convoID].clients = [];
+          clients[convoID].members = members; //List of all members part of the Conversation
+          clients[convoID].clients = []; //Array of members who have connected
         }
 
         if (!clients[convoID].clients.includes(user)) {
           console.log('createPeer');
           console.log('socket.id', socket.id);
+          //since user has not connected yet, let's notify them that they should.
           socket.emit('CreatePeer');
           clients[convoID].clients.push(user);
+          //If they are the first user to connect, then notify all other users that a video chat will start
           if (clients[convoID].clients.length === 1) {
             dbo
               .collection('users')
               .findOne({ email: user })
               .then(results => {
                 members.forEach(member => {
-                  console.log('startVideoChst');
+                  console.log('startVideoChat');
                   socket
                     .to(sockets[member])
                     .emit('StartVideoChat', convoID, results.fname);
@@ -359,6 +363,7 @@ io.on('connection', socket => {
               });
           }
         } else {
+          //user has already connected
           socket.emit('SessionActive');
         }
       });
@@ -366,6 +371,7 @@ io.on('connection', socket => {
 
   socket.on('Offer', (offer, convoID, user) => {
     console.log('Offer');
+    //send the offer to everyone in the convo (except the offerer)
     clients[convoID].members.forEach(member => {
       if (member !== user) {
         socket.to(sockets[member]).emit('BackOffer', offer);

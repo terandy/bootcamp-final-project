@@ -3,12 +3,16 @@ import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { SIDE_BAR_WIDTH } from '../../data.js';
+import { SIDE_BAR_WIDTH, TOP_BAR_HEIGHT } from '../../data.js';
 
 let SideNavStyle = styled.div`
-  display: ${props => (props.logggedIn ? 'block' : 'none')};
+  display: ${props => (props.logggedIn && !props.videoChat ? 'block' : 'none')};
   z-index: 100;
   background-color: rgb(100, 100, 100);
+  position: fixed;
+  left: 0;
+  top: ${TOP_BAR_HEIGHT}px;
+  height: 100%;
   .notify {
     position: absolute;
     top: 10px;
@@ -50,6 +54,7 @@ let SideNav = () => {
   let location = useLocation();
   let me = useSelector(state => state.userInfo['_id']);
   let loggedIn = useSelector(state => state.login);
+  let videoChat = useSelector(state => state.videoChat);
   let notifications = useSelector(state => state.notifications);
   let [notify, setNotify] = useState(false);
   useEffect(() => {
@@ -64,7 +69,7 @@ let SideNav = () => {
     }
   }, [notifications]);
   return (
-    <SideNavStyle logggedIn={loggedIn} notify={notify}>
+    <SideNavStyle logggedIn={loggedIn} videoChat={videoChat} notify={notify}>
       <div>
         <Link to="/active-users">
           <div>

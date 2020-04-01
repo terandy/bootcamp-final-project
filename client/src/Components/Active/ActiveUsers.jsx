@@ -41,7 +41,14 @@ let ActiveUsers = () => {
           if (userID !== me) {
             return (
               <ActiveUserStyle key={index} onClick={() => viewProfile(userID)}>
-                <img alt="" src={activeUsers[userID].imgSrc} />
+                <img
+                  alt=""
+                  src={
+                    activeUsers[userID].imgSrc
+                      ? activeUsers[userID].imgSrc
+                      : '/default-profile-pic.png'
+                  }
+                />
                 <div>{activeUsers[userID].fname}</div>
               </ActiveUserStyle>
             );

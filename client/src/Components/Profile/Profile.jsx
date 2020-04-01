@@ -79,104 +79,100 @@ let Profile = () => {
     return <div>loading</div>;
   }
   return (
-    <div>
-      <Container>
-        <BackgroundImg>
-          <div className="container">
-            <img alt="profile-img" src={'/background.jpg'} />
-          </div>
-        </BackgroundImg>
-        <ProfileImg>
-          <div className="container">
-            <img
-              alt="profile-img"
-              src={
-                userInfo.imgSrc ? userInfo.imgSrc : '/default-profile-pic.png'
-              }
-            />
-            <div>Edit Image</div>
-            <input
-              type="file"
-              onChange={evt => {
-                imgSubmit(evt);
-              }}
-            />
-          </div>
-        </ProfileImg>
-        <Info displayInfo={displayInfo}>
-          <h2>
-            {userInfo.fname} {userInfo.lname}
-          </h2>
-          <p>{userInfo.description}</p>
-        </Info>
-        <Form1 onSubmit={profileSubmit} displayInfo={displayInfo}>
-          <h1>Edit Profile</h1>
-          <div>
-            <label>First Name</label>
-            <input
-              type="text"
-              value={fname}
-              onChange={evt => {
-                fnameChange(evt.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label>Last Name</label>{' '}
-            <input
-              type="text"
-              value={lname}
-              onChange={evt => {
-                lnameChange(evt.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label>Description</label>
-            <input
-              type="text-area"
-              value={description}
-              onChange={evt => {
-                descriptionChange(evt.target.value);
-              }}
-            />
-          </div>
-          <button>Make Changes</button>
-          <Cancel
-            onClick={() => {
-              console.log('hi');
-              displayInfoChange('info');
-              hoverImgDisapearChange(false);
+    <Container>
+      <BackgroundImg>
+        <div className="container">
+          <img alt="profile-img" src={'/background.jpg'} />
+        </div>
+      </BackgroundImg>
+      <ProfileImg>
+        <div className="container">
+          <img
+            alt="profile-img"
+            src={userInfo.imgSrc ? userInfo.imgSrc : '/default-profile-pic.png'}
+          />
+          <div>Edit Image</div>
+          <input
+            type="file"
+            onChange={evt => {
+              imgSubmit(evt);
             }}
-            disapear={hoverImgDisapear}
-          >
-            Cancel
-          </Cancel>
-        </Form1>
-        <EditPencil
-          onMouseEnter={() => hoverImgChange(1)}
-          onMouseLeave={() => hoverImgChange(2)}
+          />
+        </div>
+      </ProfileImg>
+      <Info displayInfo={displayInfo}>
+        <h2>
+          {userInfo.fname} {userInfo.lname}
+        </h2>
+        <p>{userInfo.description}</p>
+      </Info>
+      <Form1 onSubmit={profileSubmit} displayInfo={displayInfo}>
+        <h1>Edit Profile</h1>
+        <div>
+          <label>First Name</label>
+          <input
+            type="text"
+            value={fname}
+            onChange={evt => {
+              fnameChange(evt.target.value);
+            }}
+          />
+        </div>
+        <div>
+          <label>Last Name</label>{' '}
+          <input
+            type="text"
+            value={lname}
+            onChange={evt => {
+              lnameChange(evt.target.value);
+            }}
+          />
+        </div>
+        <div>
+          <label>Description</label>
+          <input
+            type="text-area"
+            value={description}
+            onChange={evt => {
+              descriptionChange(evt.target.value);
+            }}
+          />
+        </div>
+        <button>Make Changes</button>
+        <Cancel
           onClick={() => {
-            displayInfoChange('form');
-            hoverImgDisapearChange(true);
+            console.log('hi');
+            displayInfoChange('info');
+            hoverImgDisapearChange(false);
           }}
           disapear={hoverImgDisapear}
         >
-          <Img1
-            alt="pencil-edit"
-            src={'/pencil-edit.png'}
-            img={hoverImg}
-            disapear={hoverImgDisapear}
-          />
-          <Img2
-            alt="pencil-edit2"
-            src={'/pencil-edit2.png'}
-            img={hoverImg}
-            disapear={hoverImgDisapear}
-          />
-        </EditPencil>
-      </Container>
-    </div>
+          Cancel
+        </Cancel>
+      </Form1>
+      <EditPencil
+        onMouseEnter={() => hoverImgChange(1)}
+        onMouseLeave={() => hoverImgChange(2)}
+        onClick={() => {
+          displayInfoChange('form');
+          hoverImgDisapearChange(true);
+        }}
+        disapear={hoverImgDisapear}
+      >
+        <Img1
+          alt="pencil-edit"
+          src={'/pencil-edit.png'}
+          img={hoverImg}
+          disapear={hoverImgDisapear}
+        />
+        <Img2
+          alt="pencil-edit2"
+          src={'/pencil-edit2.png'}
+          img={hoverImg}
+          disapear={hoverImgDisapear}
+        />
+      </EditPencil>
+    </Container>
   );
 };
 
