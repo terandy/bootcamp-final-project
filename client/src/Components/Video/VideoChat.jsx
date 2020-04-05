@@ -47,12 +47,10 @@ let VideoChat = props => {
           });
           //initiator calls function, others only call function on signal
           peer.on('signal', data => {
-            console.log('signal', me);
             dispatch({
               type: 'set-peer',
               content: { data: JSON.stringify(data), user: me }
             });
-            console.log('socket.emit(offer)');
             socket.emit('offer', data, me, convoID);
           });
           peer.on('stream', stream => {
@@ -62,7 +60,6 @@ let VideoChat = props => {
           //get stream
           setMyStream(stream);
           let offerBack = (offerData, offerer, answerer, convoID) => {
-            console.log('offerBack from', offerer);
             dispatch({
               type: 'set-peer',
               content: { data: JSON.stringify(offerData), user: offerer }
@@ -73,7 +70,7 @@ let VideoChat = props => {
           setPeer(peer);
         });
     }
-  }, [videoChatInitiator, convoID, me]);
+  }, [videoChatInitiator, convoID, me, dispatch]);
   useEffect(() => {
     socket.on('video-chat-decline-back', (convoID, decliner) => {
       setContent(' has declined invite.');
@@ -90,7 +87,7 @@ let VideoChat = props => {
       history.push('/messenger/' + convoID);
       if (myStream) {
         myStream.getTracks().map(val => {
-          val.stop();
+          return val.stop();
         });
       }
       socket.off('offerBack');

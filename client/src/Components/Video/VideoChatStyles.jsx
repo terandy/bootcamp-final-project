@@ -46,6 +46,7 @@ let VideoChatPage = styled.div`
       align-items: center;
       video {
         width: 100%;
+        max-width: 800px;
       }
     }
   }

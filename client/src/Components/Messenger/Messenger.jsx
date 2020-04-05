@@ -23,7 +23,6 @@ let Messenger = props => {
   let thisConvoID = props.convoID;
   useEffect(() => {
     if (thisConvoID) {
-      console.log('getConvo', thisConvoID);
       socket.emit('getConvo', thisConvoID);
     }
   }, [thisConvoID]);
@@ -32,7 +31,9 @@ let Messenger = props => {
     return (
       <Div>
         <ConvoList />
-        <MsgView></MsgView>
+        <MsgView>
+          <h1>Start chatting</h1>
+        </MsgView>
       </Div>
     );
   }

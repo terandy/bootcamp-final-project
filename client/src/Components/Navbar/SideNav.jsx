@@ -62,7 +62,6 @@ let SideNav = () => {
       Object.values(notifications).some(x => x === true) &&
       location.pathname.slice(0, 10) !== '/messenger'
     ) {
-      console.log('location', location.pathname.slice(0, 10));
       setNotify(true);
     } else {
       setNotify(false);

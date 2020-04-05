@@ -61,7 +61,7 @@ let MsgDetail = props => {
           </ListStyle>
         );
       })}
-      <VideoChat active={activeUsers ? activeUsers[me] : false}>
+      <VideoChat active={activeUsers ? activeUsers[otherMembers[0]] : false}>
         <Link to={'/video-chat/' + props.convoID}>
           <img alt="video-chat" src={'/video-chat.png'} />
         </Link>

@@ -55,7 +55,6 @@ let App = () => {
       arrayOfUsersInfo
     ) => {
       if (!convosRef.current[convoID]) {
-        console.log('no convosRef.current');
         let newConvo = {
           convoID: convoID,
           messages: [],
@@ -82,7 +81,6 @@ let App = () => {
       dispatch({ type: 'active-logout', content: userID });
     });
     socket.on('send convo', (convoID, convo, arrayOfMemberInfo) => {
-      console.log('send convo');
       dispatch({
         type: 'new-convo',
         content: { convoID, convo, arrayOfMemberInfo }
@@ -91,7 +89,6 @@ let App = () => {
     socket.on(
       'get message',
       (convoID, sender, content, time, users, arrayOfUsersInfo) => {
-        console.log('get message in app.jsx');
         getMessageFunction(
           convoID,
           sender,
@@ -103,7 +100,6 @@ let App = () => {
       }
     );
     socket.on('new convo', (convoID, convo, arrayOfMemberInfo) => {
-      console.log('new convo in App.jsx');
       dispatch({
         type: 'new-convo',
         content: { convoID, convo, arrayOfMemberInfo }
@@ -128,7 +124,7 @@ let App = () => {
       }
       dispatch({ type: 'reset-chat-start-invite' });
     }
-  }, [videoChatInvite, me]);
+  }, [videoChatInvite, me, dispatch, history]);
 
   let renderHome = () => {
     return <Home />;

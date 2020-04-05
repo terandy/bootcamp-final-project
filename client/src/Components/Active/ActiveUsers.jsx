@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 let H1 = styled.h1`
-  margin: 0.5em;
+  margin-left: 0.5em;
 `;
 let Container = styled.div`
   overflow: scroll;
@@ -40,7 +40,10 @@ let ActiveUsers = () => {
         {Object.keys(activeUsers).map((userID, index) => {
           if (userID !== me) {
             return (
-              <ActiveUserStyle key={index} onClick={() => viewProfile(userID)}>
+              <ActiveUserStyle
+                key={'active-user' + index}
+                onClick={() => viewProfile(userID)}
+              >
                 <img
                   alt=""
                   src={
@@ -53,7 +56,7 @@ let ActiveUsers = () => {
               </ActiveUserStyle>
             );
           } else {
-            return <div></div>;
+            return <div key={'non-active-user' + index}></div>;
           }
         })}
       </Container>

@@ -10,7 +10,7 @@ let initialState = {
   convoUsers: {}, // userID :{userInformation} <--used in ConvoList
   currentConvo: '',
   notifications: {}, //{userID:boolean}
-
+  otherUserInfo: {}, //where other profiles are saved, after retrieving them from database
   videoChatMode: false, //if a video chat is open, do not display navbars
   videoChatInitiator: '', //
   videoChatInvite: { start: false, convoID: '' },

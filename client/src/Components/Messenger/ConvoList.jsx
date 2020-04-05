@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import SearchBar from './SearchBar.jsx';
+import Form from './SearchBarStyle.jsx';
 let MyInfo = styled.div`
   box-sizing: border-box;
   display: flex;
@@ -44,7 +44,8 @@ let Container = styled.div`
     padding-bottom: 1em;
   }
 `;
-
+//SearchBar is a functional component that takes as props a function.
+//This function is called on submission of the form.
 let ListStyle = styled.div`
   div {
     border-radius: 1em;
@@ -86,7 +87,7 @@ let ListStyle = styled.div`
   }
 `;
 
-let ConvoList = props => {
+let ConvoList = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   let convoList = useSelector(state => state.convoList);
@@ -99,16 +100,17 @@ let ConvoList = props => {
   let activeMembers = useSelector(state => state.activeUsers);
   let notifications = useSelector(state => state.notifications);
   let [filter, setFilter] = useState('');
+  let onSubmit = evt => {
+    evt.preventDefault();
+    setFilter('');
+  };
+  let onChange = evt => {
+    setFilter(evt.target.value);
+  };
   let getConvo = (convoID, userID) => {
     dispatch({ type: 'set-current-convo', content: convoID });
     dispatch({ type: 'remove-notification', content: userID });
     history.push('/messenger/' + convoID);
-  };
-  let onSearch = input => {
-    setFilter('');
-  };
-  let onChange = input => {
-    setFilter(input);
   };
   if (!convoList) {
     return <div></div>;
@@ -126,11 +128,16 @@ let ConvoList = props => {
         </Link>
         <h2>Conversations</h2>
         <div className="search">
-          <SearchBar
-            submitFunction={onSearch}
-            changeValue={onChange}
-            placeholder={'Search convos...'}
-          />
+          <Form onSubmit={onSubmit}>
+            <input
+              type="text"
+              onChange={onChange}
+              placeholder={'Search convos...'}
+            />
+            <button>
+              <img alt="search-icon" src={'/search.png'} />
+            </button>
+          </Form>
         </div>
         <div className="list-convos">
           {Object.keys(convoList).map((convoID, index) => {

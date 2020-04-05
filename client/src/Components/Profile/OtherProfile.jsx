@@ -36,8 +36,6 @@ let OtherProfile = userID => {
   let myInfo = useSelector(state => state.userInfo);
 
   let startConvo = async userID => {
-    console.log('startConvo', userID);
-    console.log('startConvo called in OtherProfile.jsx');
     let myID = myInfo.email;
     let users = [userID, myID];
     let data = new FormData();
@@ -50,7 +48,6 @@ let OtherProfile = userID => {
     let response = JSON.parse(responseText);
     if (response.success) {
       if (response.new) {
-        console.log('reponse.new');
         socket.emit('startConvo', users, response.convoID);
       }
       dispatch({ type: 'set-current-convo', content: response.convoID });
@@ -61,12 +58,10 @@ let OtherProfile = userID => {
   useEffect(() => {
     let data = new FormData();
     data.append('userID', userID.userID);
-    console.log('data', data);
     fetch('/get-userInfo', { method: 'POST', body: data })
       .then(responseBody => responseBody.text())
       .then(responseText => JSON.parse(responseText))
       .then(response => {
-        console.log(response);
         if (response.success) {
           dispatch({ type: 'add-profile', content: response.userInfo });
         }

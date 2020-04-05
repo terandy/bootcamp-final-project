@@ -19,7 +19,7 @@ MongoClient.connect(
   (err, db) => {
     dbo = db.db('media-board');
     if (err) {
-      console.log('error', err);
+      console.log('ERROR', err);
     }
   }
 );
@@ -115,9 +115,7 @@ app.post('/register', upload.none(), (req, res) => {
           type: 'patient'
         })
         .then(results => {
-          console.log('activeUsers', activeUsers);
           activeUsers[email] = { email, fname, lname, _id: results.insertedId };
-          console.log('activeUsers', activeUsers);
         });
       let sessionId = '' + Math.floor(Math.random() * 100000000);
       sessions[sessionId] = email;
@@ -223,16 +221,14 @@ app.post('/get-convoID', upload.none(), (req, res) => {
 
 app.post('/get-userInfo', upload.none(), (req, res) => {
   let userID = req.body.userID;
-  console.log('email', userID);
   dbo
     .collection('users')
     .findOne({ _id: new ObjectID(userID) })
     .then(results => {
-      console.log('results', results);
       res.json({ success: true, userInfo: results });
     })
     .catch(err => {
-      console.log('error', err);
+      console.log('ERROR', err);
     });
 });
 
@@ -262,7 +258,6 @@ app.post('/edit-profile', upload.none(), (req, res) => {
   let lname = req.body.lname;
   let description = req.body.description;
   if (sessions[sid] && sessions[sid] === userID) {
-    console.log('hi');
     dbo.collection('users').updateOne(
       { email: userID },
       {
@@ -293,7 +288,6 @@ io.on('connection', socket => {
   });
 
   socket.on('startConvo', (users, convoID) => {
-    console.log('startConvo');
     let newConvo = { convoID: convoID, messages: [], members: users };
     dbo
       .collection('users')
@@ -312,7 +306,6 @@ io.on('connection', socket => {
   });
 
   socket.on('getConvo', convoID => {
-    console.log('getConvo server.js');
     dbo
       .collection('conversations')
       .findOne({ convoID: convoID })
@@ -328,7 +321,6 @@ io.on('connection', socket => {
   });
 
   socket.on('new message', (sender, content, convoID, members) => {
-    console.log('new message');
     let time = Date();
     dbo
       .collection('users')
@@ -336,7 +328,6 @@ io.on('connection', socket => {
       .toArray()
       .then(results => {
         results.forEach(member => {
-          console.log('member', member);
           io.to(sockets[member.email]).emit(
             'get message',
             convoID,
@@ -366,7 +357,6 @@ io.on('connection', socket => {
 
   //Video Chat
   socket.on('video-chat-start', (convoID, client) => {
-    console.log('start');
     if (!videoChats[convoID]) {
       videoChats[convoID] = {
         initiator: '',
@@ -381,12 +371,11 @@ io.on('connection', socket => {
           videoChats[convoID].members = convo.members;
           convo.members.forEach(member => {
             if (member !== client) {
-              console.log('invite');
               io.to(sockets[member]).emit('video-chat-start-invite', convoID);
             }
           });
         })
-        .catch(err => console.log('error', err));
+        .catch(err => console.log('ERROR', err));
     } else {
       videoChats[convoID].connectedUsers.push(client);
       //The last user to connect, is the initiator
@@ -401,7 +390,6 @@ io.on('connection', socket => {
     }
   });
   socket.on('offer', (data, offerer, convoID) => {
-    console.log('offer from', offerer);
     videoChats[convoID].members.forEach(answerer => {
       if (answerer !== offerer) {
         io.to(sockets[answerer]).emit(
@@ -416,7 +404,6 @@ io.on('connection', socket => {
   });
   socket.on('video-chat-decline', (convoID, decliner) => {
     videoChats[convoID].connectedUsers.forEach(user => {
-      console.log('videoChats', videoChats[convoID]);
       if (user !== decliner) {
         io.to(sockets[user]).emit('video-chat-decline-back', convoID, decliner);
       }

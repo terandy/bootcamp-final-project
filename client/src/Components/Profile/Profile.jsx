@@ -72,7 +72,7 @@ let Profile = () => {
         }
       });
     } else {
-      console.log('session not valid');
+      console.log('ERROR - session not valid');
     }
   };
   if (!userInfo) {
@@ -141,7 +141,6 @@ let Profile = () => {
         <button>Make Changes</button>
         <Cancel
           onClick={() => {
-            console.log('hi');
             displayInfoChange('info');
             hoverImgDisapearChange(false);
           }}
