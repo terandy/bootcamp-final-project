@@ -52,6 +52,8 @@ let ActiveUsers = () => {
                 <div>{activeUsers[userID].fname}</div>
               </ActiveUserStyle>
             );
+          } else {
+            return <div></div>;
           }
         })}
       </Container>

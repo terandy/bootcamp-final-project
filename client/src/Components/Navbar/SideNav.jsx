@@ -6,7 +6,8 @@ import styled from 'styled-components';
 import { SIDE_BAR_WIDTH, TOP_BAR_HEIGHT } from '../../data.js';
 
 let SideNavStyle = styled.div`
-  display: ${props => (props.logggedIn && !props.videoChat ? 'block' : 'none')};
+  display: ${props =>
+    props.logggedIn && !props.videoChatMode ? 'block' : 'none'};
   z-index: 100;
   background-color: rgb(100, 100, 100);
   position: fixed;
@@ -52,9 +53,8 @@ let SideNavStyle = styled.div`
 
 let SideNav = () => {
   let location = useLocation();
-  let me = useSelector(state => state.userInfo['_id']);
   let loggedIn = useSelector(state => state.login);
-  let videoChat = useSelector(state => state.videoChat);
+  let videoChatMode = useSelector(state => state.videoChatMode);
   let notifications = useSelector(state => state.notifications);
   let [notify, setNotify] = useState(false);
   useEffect(() => {
@@ -67,9 +67,13 @@ let SideNav = () => {
     } else {
       setNotify(false);
     }
-  }, [notifications]);
+  }, [notifications, location.pathname]);
   return (
-    <SideNavStyle logggedIn={loggedIn} videoChat={videoChat} notify={notify}>
+    <SideNavStyle
+      logggedIn={loggedIn}
+      videoChatMode={videoChatMode}
+      notify={notify}
+    >
       <div>
         <Link to="/active-users">
           <div>

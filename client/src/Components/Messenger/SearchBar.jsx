@@ -51,7 +51,7 @@ let SearchBar = props => {
         placeholder={props.placeholder}
       />
       <button>
-        <img src={'/search.png'} />
+        <img alt="search-icon" src={'/search.png'} />
       </button>
     </Form>
   );

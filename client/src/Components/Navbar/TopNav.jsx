@@ -8,7 +8,7 @@ import { SIDE_BAR_WIDTH, TOP_BAR_HEIGHT } from '../../data.js';
 let Nav = styled.div`
 box-sizing:border-box;
 position:fixed;
-display: ${props => (props.videoChat ? 'none' : 'block')};
+display:${props => (!props.videoChatMode ? 'block' : 'none')};
 top:0;
 height: ${TOP_BAR_HEIGHT}px;
 width: 100%;
@@ -19,7 +19,7 @@ background-color: white;
 div{
   width:100%;
   height:100%;
-  display: ${props => (props.videoChat ? 'none' : 'flex')};
+  display: ${props => (!props.videoChatMode ? 'flex' : 'none')};
   color: rgb(0, 56, 70);
   
   justify-content: space-between;
@@ -31,11 +31,11 @@ div{
 `;
 let Navbar = () => {
   let loggedIn = useSelector(state => state.login);
-  let videoChat = useSelector(state => state.videoChat);
+  let videoChatMode = useSelector(state => state.videoChatMode);
   let fname = useSelector(state => state.userInfo.fname);
   if (loggedIn) {
     return (
-      <Nav videoChat={videoChat}>
+      <Nav videoChatMode={videoChatMode}>
         <div>
           <div>Hi {fname}</div>
           <div>

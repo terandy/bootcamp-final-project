@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ProfileImg, BackgroundImg, Container, Info } from './profileStyle.jsx';
@@ -71,7 +71,7 @@ let OtherProfile = userID => {
           dispatch({ type: 'add-profile', content: response.userInfo });
         }
       });
-  }, []);
+  }, [userID.userID, dispatch]);
 
   if (!otherUserInfo) {
     return <h1>Loading...</h1>;
@@ -109,7 +109,7 @@ let OtherProfile = userID => {
           onClick={() => startConvo(otherUserInfo.email)}
         >
           Chat
-          <img src={chatSrcImg} />
+          <img src={chatSrcImg} alt="start-chat-with-this-person-icon" />
         </Button>
       </Container>
     </div>

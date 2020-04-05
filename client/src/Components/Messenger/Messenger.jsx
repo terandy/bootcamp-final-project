@@ -22,8 +22,8 @@ let MsgView = styled.div`
 let Messenger = props => {
   let thisConvoID = props.convoID;
   useEffect(() => {
-    if (props.convoID) {
-      console.log('getConvo', props.convoID);
+    if (thisConvoID) {
+      console.log('getConvo', thisConvoID);
       socket.emit('getConvo', thisConvoID);
     }
   }, [thisConvoID]);

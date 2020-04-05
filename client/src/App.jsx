@@ -1,12 +1,12 @@
 //Librairies
 import React, { useEffect, useRef } from 'react';
-import { Route, useHistory, useLocation } from 'react-router-dom';
+import { Route, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { socket } from './Components/Home/Login.jsx';
 //Compononents
 import Messenger from './Components/Messenger/Messenger.jsx';
-import VideoChatPeer from './Components/Video/VideoChatPeer.jsx';
+import VideoChat from './Components/Video/VideoChat.jsx';
 import Profile from './Components/Profile/Profile.jsx';
 import OtherProfile from './Components/Profile/OtherProfile.jsx';
 import ActiveUsers from './Components/Active/ActiveUsers.jsx';
@@ -15,64 +15,66 @@ import Login from './Components/Home/Login.jsx';
 import Register from './Components/Home/Register.jsx';
 import SideNav from './Components/Navbar/SideNav.jsx';
 import TopNav from './Components/Navbar/TopNav.jsx';
-import { SIDE_BAR_WIDTH, TOP_BAR_HEIGHT, BG_COLOR } from './data.js';
+import { SIDE_BAR_WIDTH, TOP_BAR_HEIGHT } from './data.js';
 
-let Container = styled.div`
-  & > div {
-    display: flex;
-  }
-`;
+let Container = styled.div``;
 let MainContainer = styled.div`
   height: 100vh;
   width: 100vw;
 `;
 let Main = styled.div`
   box-sizing: border-box;
-  padding-top: ${TOP_BAR_HEIGHT}px;
-  padding-left: ${SIDE_BAR_WIDTH}px;
+  padding-top: ${props => (props.videoChatMode ? '0' : TOP_BAR_HEIGHT + 'px')};
+  padding-left: ${props => (props.videoChatMode ? '0' : SIDE_BAR_WIDTH + 'px')};
   width: 100%;
   height: 100%;
 `;
 let App = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-
+  let me = useSelector(state => state.userInfo.email);
+  let videoChatInvite = useSelector(state => state.videoChatInvite);
   let login = useSelector(state => state.login);
   let conversations = useSelector(state => state.conversations);
+  let videoChatMode = useSelector(state => state.videoChatMode);
   let convosRef = useRef();
+  let meRef = useRef();
+  meRef.current = me;
   convosRef.current = conversations;
-
-  let getMessageFunction = (
-    convoID,
-    sender,
-    content,
-    time,
-    users,
-    arrayOfUsersInfo
-  ) => {
-    if (!convosRef.current[convoID]) {
-      console.log('no convosRef.current');
-      let newConvo = {
-        convoID: convoID,
-        messages: [],
-        members: users
-      };
-      dispatch({
-        type: 'new-convo',
-        content: {
-          convoID: convoID,
-          convo: newConvo,
-          arrayOfMemberInfo: arrayOfUsersInfo
-        }
-      });
-    }
-    dispatch({
-      type: 'get-message',
-      content: { sender, content, time, convoID }
-    });
-  };
+  let peers = useSelector(state => state.peers);
+  let peersRef = useRef();
+  peersRef.current = peers;
   //Listening for events
   useEffect(() => {
+    let getMessageFunction = (
+      convoID,
+      sender,
+      content,
+      time,
+      users,
+      arrayOfUsersInfo
+    ) => {
+      if (!convosRef.current[convoID]) {
+        console.log('no convosRef.current');
+        let newConvo = {
+          convoID: convoID,
+          messages: [],
+          members: users
+        };
+        dispatch({
+          type: 'new-convo',
+          content: {
+            convoID: convoID,
+            convo: newConvo,
+            arrayOfMemberInfo: arrayOfUsersInfo
+          }
+        });
+      }
+      dispatch({
+        type: 'get-message',
+        content: { sender, content, time, convoID }
+      });
+    };
     socket.on('active login', userInfo => {
       dispatch({ type: 'active-login', content: userInfo });
     });
@@ -107,16 +109,26 @@ let App = () => {
         content: { convoID, convo, arrayOfMemberInfo }
       });
     });
-    socket.on('StartVideoChat', (convoID, user) => {
-      if (
-        window.confirm(
-          user + ' wants to start video chat! Click OK to join conversation.'
-        )
-      ) {
-        history.push('/video-chat/' + convoID);
-      }
+    socket.on('video-chat-initiator', initiator => {
+      dispatch({ type: 'video-chat-initiator', content: { initiator } });
     });
-  }, []);
+    socket.on('video-chat-start-invite', convoID => {
+      dispatch({
+        type: 'video-chat-start-invite',
+        content: { convoID }
+      });
+    });
+  }, [dispatch]);
+  useEffect(() => {
+    if (videoChatInvite.start) {
+      if (window.confirm('join videoChat?')) {
+        history.push('/video-chat/' + videoChatInvite.convoID);
+      } else {
+        socket.emit('video-chat-decline', videoChatInvite.convoID, me);
+      }
+      dispatch({ type: 'reset-chat-start-invite' });
+    }
+  }, [videoChatInvite, me]);
 
   let renderHome = () => {
     return <Home />;
@@ -125,7 +137,7 @@ let App = () => {
     return <Messenger convoID={renderData.match.params.mid} />;
   };
   let renderVideoChat = renderData => {
-    return <VideoChatPeer convoID={renderData.match.params.mid} />;
+    return <VideoChat convoID={renderData.match.params.mid} />;
   };
   let renderMainMessenger = () => {
     return <Messenger />;
@@ -145,36 +157,36 @@ let App = () => {
   let renderRegister = () => {
     return <Register />;
   };
-  let checkCookies = async () => {
-    console.log('checkCookies in App.jsx');
-    let responseBody = await fetch('/check-cookies', { method: 'POST' });
-    let responseText = await responseBody.text();
-    let response = JSON.parse(responseText);
-    if (response.success) {
-      socket.connect();
-      socket.emit('reload', response.userInfo);
-      dispatch({
-        type: 'login',
-        content: {
-          userInfo: response.userInfo,
-          activeUsers: response.activeUsers,
-          convoList: response.convoList,
-          convoUsers: response.convoUsers
-        }
-      });
-    }
-  };
+
   useEffect(() => {
+    let checkCookies = async () => {
+      let responseBody = await fetch('/check-cookies', { method: 'POST' });
+      let responseText = await responseBody.text();
+      let response = JSON.parse(responseText);
+      if (response.success) {
+        socket.connect();
+        socket.emit('reload', response.userInfo);
+        dispatch({
+          type: 'login',
+          content: {
+            userInfo: response.userInfo,
+            activeUsers: response.activeUsers,
+            convoList: response.convoList,
+            convoUsers: response.convoUsers
+          }
+        });
+      }
+    };
     if (!login) {
       checkCookies();
     }
-  }, []);
+  }, [login, dispatch]);
   return (
     <Container loggedIn={login}>
       <TopNav />
       <MainContainer>
         <SideNav />
-        <Main>
+        <Main videoChatMode={videoChatMode}>
           <Route exact={true} path="/" render={renderHome} />
           <Route
             exact={true}

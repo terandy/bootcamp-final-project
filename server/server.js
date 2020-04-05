@@ -27,7 +27,7 @@ MongoClient.connect(
 let activeUsers = {};
 let sockets = {};
 let sessions = {};
-let clients = {};
+let videoChats = {};
 
 app.get('/', (req, res) => {
   res.send('server is running....');
@@ -327,66 +327,6 @@ io.on('connection', socket => {
       });
   });
 
-  socket.on('NewClient', (convoID, user) => {
-    console.log('NewClient');
-    dbo
-      .collection('conversations')
-      .findOne({ convoID: convoID })
-      .then(results => {
-        let members = results.members;
-        //Client object keeps track of members who have established a connection
-        //If it doesn't exist create it.
-        if (!clients[convoID]) {
-          clients[convoID] = {};
-          clients[convoID].members = members; //List of all members part of the Conversation
-          clients[convoID].clients = []; //Array of members who have connected
-        }
-
-        if (!clients[convoID].clients.includes(user)) {
-          console.log('createPeer');
-          console.log('socket.id', socket.id);
-          //since user has not connected yet, let's notify them that they should.
-          socket.emit('CreatePeer');
-          clients[convoID].clients.push(user);
-          //If they are the first user to connect, then notify all other users that a video chat will start
-          if (clients[convoID].clients.length === 1) {
-            dbo
-              .collection('users')
-              .findOne({ email: user })
-              .then(results => {
-                members.forEach(member => {
-                  console.log('startVideoChat');
-                  socket
-                    .to(sockets[member])
-                    .emit('StartVideoChat', convoID, results.fname);
-                });
-              });
-          }
-        } else {
-          //user has already connected
-          socket.emit('SessionActive');
-        }
-      });
-  });
-
-  socket.on('Offer', (offer, convoID, user) => {
-    console.log('Offer');
-    //send the offer to everyone in the convo (except the offerer)
-    clients[convoID].members.forEach(member => {
-      if (member !== user) {
-        socket.to(sockets[member]).emit('BackOffer', offer);
-      }
-    });
-  });
-  socket.on('Answer', (answer, convoID, user) => {
-    console.log('Answer');
-    clients[convoID].members.forEach(member => {
-      if (member !== user) {
-        socket.to(sockets[member]).emit('BackAnswer', answer);
-      }
-    });
-  });
-
   socket.on('new message', (sender, content, convoID, members) => {
     console.log('new message');
     let time = Date();
@@ -420,14 +360,76 @@ io.on('connection', socket => {
     delete sockets[userID];
     io.emit('active logout', userID);
   });
-  socket.on('LeaveChat', (otherUser, leaver, convoID) => {
-    io.to(sockets[otherUser]).emit('leaveVideoChat');
-    clients[convoID].clients = clients[convoID].clients.filter(
-      user => user !== leaver
-    );
-  });
   socket.on('disconnect', () => {
     console.log('user disconnected: ', socket.id);
+  });
+
+  //Video Chat
+  socket.on('video-chat-start', (convoID, client) => {
+    console.log('start');
+    if (!videoChats[convoID]) {
+      videoChats[convoID] = {
+        initiator: '',
+        connectedUsers: [client],
+        members: []
+      };
+      //get list of convo members from database
+      dbo
+        .collection('conversations')
+        .findOne({ convoID: convoID })
+        .then(convo => {
+          videoChats[convoID].members = convo.members;
+          convo.members.forEach(member => {
+            if (member !== client) {
+              console.log('invite');
+              io.to(sockets[member]).emit('video-chat-start-invite', convoID);
+            }
+          });
+        })
+        .catch(err => console.log('error', err));
+    } else {
+      videoChats[convoID].connectedUsers.push(client);
+      //The last user to connect, is the initiator
+      if (
+        videoChats[convoID].connectedUsers.length ===
+        videoChats[convoID].members.length
+      ) {
+        videoChats[convoID].members.forEach(member => {
+          io.to(sockets[member]).emit('video-chat-initiator', client);
+        });
+      }
+    }
+  });
+  socket.on('offer', (data, offerer, convoID) => {
+    console.log('offer from', offerer);
+    videoChats[convoID].members.forEach(answerer => {
+      if (answerer !== offerer) {
+        io.to(sockets[answerer]).emit(
+          'offerBack',
+          data,
+          offerer,
+          answerer,
+          convoID
+        );
+      }
+    });
+  });
+  socket.on('video-chat-decline', (convoID, decliner) => {
+    videoChats[convoID].connectedUsers.forEach(user => {
+      console.log('videoChats', videoChats[convoID]);
+      if (user !== decliner) {
+        io.to(sockets[user]).emit('video-chat-decline-back', convoID, decliner);
+      }
+    });
+  });
+  socket.on('video-chat-leave', (convoID, client) => {
+    videoChats[convoID].connectedUsers = videoChats[
+      convoID
+    ].connectedUsers.filter(user => user !== client);
+
+    if (videoChats[convoID].connectedUsers.length === 0) {
+      delete videoChats[convoID];
+    }
   });
 });
 

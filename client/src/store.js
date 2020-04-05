@@ -10,8 +10,11 @@ let initialState = {
   convoUsers: {}, // userID :{userInformation} <--used in ConvoList
   currentConvo: '',
   notifications: {}, //{userID:boolean}
-  otherUserInfo: {},
-  videoChat: false //if a video chat is open, do not display navbars
+
+  videoChatMode: false, //if a video chat is open, do not display navbars
+  videoChatInitiator: '', //
+  videoChatInvite: { start: false, convoID: '' },
+  peers: {}
 };
 
 let reducer = (state, action) => {
@@ -22,8 +25,27 @@ let reducer = (state, action) => {
         newState.userInfo.lname = action.content.lname;
         newState.userInfo.description = action.content.description;
         break;
-      case 'videoChat':
-        newState.videoChat = action.content;
+      case 'videoChatMode':
+        newState.videoChatMode = action.content;
+        break;
+      case 'video-chat-start-invite':
+        newState.videoChatInvite = {
+          start: true,
+          convoID: action.content.convoID
+        };
+        break;
+      case 'video-chat-initiator':
+        newState.videoChatInitiator = action.content.initiator;
+        break;
+      case 'reset-chat-start-invite':
+        newState.videoChatInvite = { start: false, convoID: '' };
+        newState.videoChatInitiator = '';
+        break;
+      case 'set-peer':
+        newState.peers[action.content.user] = action.content.data;
+        break;
+      case 'destroy-peers':
+        newState.peers = {};
         break;
       case 'login':
         newState.login = true;

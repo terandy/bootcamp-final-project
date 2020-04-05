@@ -164,6 +164,7 @@ let ConvoList = props => {
                 </div>
               );
             }
+            return <div key={'ConvoList' + index}></div>;
           })}
         </div>
       </div>

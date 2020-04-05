@@ -17,6 +17,7 @@ let Container = styled.div`
   }
 `;
 let VideoChat = styled.div`
+  display: ${props => (props.active ? 'block' : 'none')};
   height: 100%;
   padding: 0;
   padding-right: 1em;
@@ -33,6 +34,7 @@ let MsgDetail = props => {
   let convoList = useSelector(state => state.convoList);
   let convoUsers = useSelector(state => state.convoUsers);
   let members = convoList[thisConvoID] ? convoList[thisConvoID].members : [];
+  let activeUsers = useSelector(state => state.activeUsers);
   let otherMembers = members.filter(user => {
     return user !== me;
   });
@@ -59,7 +61,7 @@ let MsgDetail = props => {
           </ListStyle>
         );
       })}
-      <VideoChat>
+      <VideoChat active={activeUsers ? activeUsers[me] : false}>
         <Link to={'/video-chat/' + props.convoID}>
           <img alt="video-chat" src={'/video-chat.png'} />
         </Link>
