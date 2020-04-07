@@ -21,7 +21,7 @@ const Form = styled.form`
   width: 350px;
   box-sizing: border-box;
   position: fixed;
-  left: 0;
+  right: 0;
   border-radius: 0;
   height: 100%;
   margin: 0;

@@ -62,83 +62,81 @@ let Register = () => {
     }
   };
   return (
-    <Outer>
-      <Form onSubmit={submitHandler}>
-        <Title>
-          <h1>Register</h1>
-        </Title>
-        <div className="row">
-          <div>
-            <label htmlFor="fname">First Name</label>
-            <input
-              type="text"
-              id="fname"
-              required
-              autoComplete="on"
-              value={fname}
-              onChange={evt => {
-                fnameChange(evt.target.value);
-              }}
-            />
-          </div>
-          <div>
-            <label htmlFor="lname">Last Name</label>
-            <input
-              type="text"
-              id="lname"
-              required
-              autoComplete="on"
-              value={lname}
-              onChange={evt => {
-                lnameChange(evt.target.value);
-              }}
-            />
-          </div>
-        </div>
+    <Form onSubmit={submitHandler}>
+      <Title>
+        <h1>Register</h1>
+      </Title>
+      <div className="row">
         <div>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="fname">First Name</label>
           <input
             type="text"
-            id="email"
+            id="fname"
             required
             autoComplete="on"
-            value={email}
+            value={fname}
             onChange={evt => {
-              emailChange(evt.target.value);
+              fnameChange(evt.target.value);
             }}
           />
         </div>
         <div>
-          <label htmlFor="pw">Password</label>
+          <label htmlFor="lname">Last Name</label>
           <input
-            type="password"
-            id="pw"
+            type="text"
+            id="lname"
             required
-            autoComplete="off"
-            value={pw}
+            autoComplete="on"
+            value={lname}
             onChange={evt => {
-              pwChange(evt.target.value);
+              lnameChange(evt.target.value);
             }}
           />
         </div>
-        <div>
-          <label htmlFor="confirmPw">Confirm password</label>
-          <input
-            type="password"
-            id="confirmPw"
-            required
-            autoComplete="off"
-            value={confirmPw}
-            onChange={evt => {
-              confirmPwChange(evt.target.value);
-            }}
-          />
-        </div>
+      </div>
+      <div>
+        <label htmlFor="email">Email</label>
+        <input
+          type="text"
+          id="email"
+          required
+          autoComplete="on"
+          value={email}
+          onChange={evt => {
+            emailChange(evt.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <label htmlFor="pw">Password</label>
+        <input
+          type="password"
+          id="pw"
+          required
+          autoComplete="off"
+          value={pw}
+          onChange={evt => {
+            pwChange(evt.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <label htmlFor="confirmPw">Confirm password</label>
+        <input
+          type="password"
+          id="confirmPw"
+          required
+          autoComplete="off"
+          value={confirmPw}
+          onChange={evt => {
+            confirmPwChange(evt.target.value);
+          }}
+        />
+      </div>
 
-        <button>Create account</button>
-        <E>{errMsg}</E>
-      </Form>
-    </Outer>
+      <button>Create account</button>
+      <E>{errMsg}</E>
+    </Form>
   );
 };
 

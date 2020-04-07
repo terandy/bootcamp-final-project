@@ -7,10 +7,7 @@ import io from 'socket.io-client';
 const socket = io('http://localhost:5000', {
   autoConnect: false
 });
-const FormLogin = styled(Form)`
-  right: 0;
-  left: auto;
-`;
+
 let Login = () => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -44,7 +41,7 @@ let Login = () => {
     }
   };
   return (
-    <FormLogin onSubmit={submitHandler}>
+    <Form onSubmit={submitHandler}>
       <Title>
         <h1>Sign in</h1>
       </Title>
@@ -77,7 +74,7 @@ let Login = () => {
 
       <button>Sign in</button>
       <E>{errorMessage}</E>
-    </FormLogin>
+    </Form>
   );
 };
 

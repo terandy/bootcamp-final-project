@@ -73,41 +73,39 @@ let OtherProfile = userID => {
   }
 
   return (
-    <div>
-      <Container>
-        <BackgroundImg>
-          <div className="container">
-            <img alt="profile-img" src={'/background.jpg'} />
-          </div>
-        </BackgroundImg>
-        <ProfileImg2>
-          <div className="container">
-            <img
-              alt="profile-img"
-              src={
-                otherUserInfo.imgSrc
-                  ? otherUserInfo.imgSrc
-                  : '/default-profile-pic.png'
-              }
-            />
-          </div>
-        </ProfileImg2>
-        <Info displayInfo={'info'}>
-          <h2>
-            {otherUserInfo.fname} {otherUserInfo.lname}
-          </h2>
-          <p>{otherUserInfo.description}</p>
-        </Info>
-        <Button
-          onMouseEnter={() => changeChatSrcImg('/messages-grey.png')}
-          onMouseLeave={() => changeChatSrcImg('/messages.png')}
-          onClick={() => startConvo(otherUserInfo.email)}
-        >
-          Chat
-          <img src={chatSrcImg} alt="start-chat-with-this-person-icon" />
-        </Button>
-      </Container>
-    </div>
+    <Container>
+      <BackgroundImg>
+        <div className="container">
+          <img alt="profile-img" src={'/background.jpg'} />
+        </div>
+      </BackgroundImg>
+      <ProfileImg2>
+        <div className="container">
+          <img
+            alt="profile-img"
+            src={
+              otherUserInfo.imgSrc
+                ? otherUserInfo.imgSrc
+                : '/default-profile-pic.png'
+            }
+          />
+        </div>
+      </ProfileImg2>
+      <Info displayInfo={'info'}>
+        <h2>
+          {otherUserInfo.fname} {otherUserInfo.lname}
+        </h2>
+        <p>{otherUserInfo.description}</p>
+      </Info>
+      <Button
+        onMouseEnter={() => changeChatSrcImg('/messages-grey.png')}
+        onMouseLeave={() => changeChatSrcImg('/messages.png')}
+        onClick={() => startConvo(otherUserInfo.email)}
+      >
+        Chat
+        <img src={chatSrcImg} alt="start-chat-with-this-person-icon" />
+      </Button>
+    </Container>
   );
 };
 
