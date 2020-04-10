@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Form, { Title, E } from './FormStyle.jsx';
-import styled from 'styled-components';
 import io from 'socket.io-client';
-const socket = io('http://localhost:5000', {
+const socket = io(window.location.origin, {
   autoConnect: false
 });
 

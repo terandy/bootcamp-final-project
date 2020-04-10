@@ -11,9 +11,70 @@ let SideNavStyle = styled.div`
   z-index: 100;
   background-color: rgb(100, 100, 100);
   position: fixed;
-  left: 0;
-  top: ${TOP_BAR_HEIGHT}px;
-  height: 100%;
+  @media screen and (min-width: 500px) {
+    left: 0;
+    top: ${TOP_BAR_HEIGHT}px;
+    height: 100%;
+    & > div {
+      width: ${SIDE_BAR_WIDTH}px;
+      text-align: center;
+      a {
+        font-size: 0.7em;
+        text-decoration: none;
+        color: white;
+        height: min-content;
+      }
+
+      div {
+        box-sizing: border-box;
+        padding: 1em;
+        margin-bottom: 2em;
+        position: relative;
+        &:hover {
+          padding: 0.5em;
+        }
+        img {
+          width: 70%;
+        }
+      }
+    }
+  }
+  @media screen and (max-width: 500px) {
+    bottom: 0;
+    width: 100%;
+    height: ${SIDE_BAR_WIDTH}px;
+    & > div {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      a {
+        font-size: 0.7em;
+        text-decoration: none;
+        color: white;
+        height: 100%;
+        width: 30%;
+      }
+
+      div {
+        box-sizing: border-box;
+        padding: 1em;
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        &:hover {
+          padding: 0.5em;
+        }
+        img {
+          height: 70%;
+          width: auto;
+          margin-bottom: 0.5em;
+        }
+      }
+    }
+  }
   .notify {
     position: absolute;
     top: 10px;
@@ -26,29 +87,6 @@ let SideNavStyle = styled.div`
     padding: 0;
     transition: height ease-in-out 0.2s, width ease-in-out 0.2s;
   }
-  & > div {
-    width: ${SIDE_BAR_WIDTH}px;
-    text-align: center;
-    a {
-      font-size: 0.7em;
-      text-decoration: none;
-      color: white;
-      height: min-content;
-    }
-
-    div {
-      box-sizing: border-box;
-      padding: 1em;
-      margin-bottom: 2em;
-      position: relative;
-      &:hover {
-        padding: 0.5em;
-      }
-      img {
-        width: 70%;
-      }
-    }
-  }
 `;
 
 let SideNav = () => {
@@ -57,6 +95,9 @@ let SideNav = () => {
   let videoChatMode = useSelector(state => state.videoChatMode);
   let notifications = useSelector(state => state.notifications);
   let [notify, setNotify] = useState(false);
+  let scrollLeft = () => {
+    window.scrollTo({ left: 0 });
+  };
   useEffect(() => {
     if (
       Object.values(notifications).some(x => x === true) &&
@@ -76,7 +117,7 @@ let SideNav = () => {
       <div>
         <Link to="/active-users">
           <div>
-            <img alt="" src={'/find-users.png'} style={{ width: '100%' }} />
+            <img alt="" src={'/find-users.png'} />
             Discover
           </div>
         </Link>
@@ -86,7 +127,7 @@ let SideNav = () => {
             Profile
           </div>
         </Link>
-        <Link to={'/messenger'}>
+        <Link to={'/messenger'} onClick={scrollLeft}>
           <div>
             <img alt="" src={'/messages.png'} />
             Chat

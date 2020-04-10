@@ -16,8 +16,15 @@ let Button = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
-  right: 50px;
-  top: 250px;
+  @media screen and (max-width: 500px) {
+    right: 10px;
+    top: 250px;
+    flex-direction: column;
+  }
+  @media screen and (min-width: 500px) {
+    right: 50px;
+    top: 250px;
+  }
   border: 1px solid transparent;
   &:hover {
     cursor: pointer;

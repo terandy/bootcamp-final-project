@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { socket } from './../Home/Login.jsx';
 import {
   ProfileImg,
   BackgroundImg,
@@ -42,6 +43,7 @@ let Profile = () => {
     let responseText = await responseBody.text();
     let response = JSON.parse(responseText);
     if (response.success) {
+      socket.emit('user-edit', email);
       dispatch({
         type: 'edit-profile',
         content: {
@@ -65,6 +67,7 @@ let Profile = () => {
     let responseText = await responseBody.text();
     let response = JSON.parse(responseText);
     if (response.success) {
+      socket.emit('user-edit', email);
       dispatch({
         type: 'edit-profile-img',
         content: {

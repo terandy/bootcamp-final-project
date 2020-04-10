@@ -20,6 +20,13 @@ let MyInfo = styled.div`
 let Container = styled.div`
   box-sizing: border-box;
   padding: 0.5em;
+  @media screen and (max-width: 500px) {
+    width: 50%;
+  }
+  @media screen and (min-width: 500px) {
+    width: 300px;
+  }
+  height: 100%;
   .box {
     box-sizing: border-box;
     background-color: white;
@@ -108,6 +115,7 @@ let ConvoList = () => {
     setFilter(evt.target.value);
   };
   let getConvo = (convoID, userID) => {
+    window.scrollTo({ left: window.innerWidth, behaviour: 'smooth' });
     dispatch({ type: 'set-current-convo', content: convoID });
     dispatch({ type: 'remove-notification', content: userID });
     history.push('/messenger/' + convoID);

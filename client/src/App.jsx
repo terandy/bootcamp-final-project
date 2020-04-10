@@ -21,11 +21,25 @@ let Container = styled.div``;
 let MainContainer = styled.div`
   height: 100vh;
   width: 100vw;
+  min-width: 300px;
+  @media screen and (max-width: 400px) {
+    width: ${props => (props.messenger ? '200vw' : '100vw')};
+  }
+  @media screen and (min-width: 400px) {
+    width: 100vw;
+  }
 `;
 let Main = styled.div`
   box-sizing: border-box;
   padding-top: ${props => (props.videoChatMode ? '0' : TOP_BAR_HEIGHT + 'px')};
-  padding-left: ${props => (props.videoChatMode ? '0' : SIDE_BAR_WIDTH + 'px')};
+  @media screen and (max-width: 400px) {
+    padding-bottom: ${props =>
+      props.videoChatMode ? '0' : SIDE_BAR_WIDTH + 'px'};
+  }
+  @media screen and (min-width: 400px) {
+    padding-left: ${props =>
+      props.videoChatMode ? '0' : SIDE_BAR_WIDTH + 'px'};
+  }
   width: 100%;
   height: 100%;
 `;
@@ -99,6 +113,14 @@ let App = () => {
         );
       }
     );
+    socket.on('active-user-edit', userInfo => {
+      if (userInfo.email !== me) {
+        dispatch({
+          type: 'update-active-user',
+          content: { userID: userInfo.email, userInfo: userInfo }
+        });
+      }
+    });
     socket.on('new convo', (convoID, convo, arrayOfMemberInfo) => {
       dispatch({
         type: 'new-convo',
@@ -180,7 +202,7 @@ let App = () => {
   return (
     <Container loggedIn={login}>
       <TopNav />
-      <MainContainer>
+      <MainContainer messenger={window.location.href.includes('messenger')}>
         <SideNav />
         <Main videoChatMode={videoChatMode}>
           <Route exact={true} path="/" render={renderHome} />

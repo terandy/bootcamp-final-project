@@ -18,7 +18,12 @@ const Form = styled.form`
   margin: 1em 2em;
   background-color: white;
   padding: 1em;
-  width: 350px;
+  @media screen and (max-width: 500px) {
+    width: 100%;
+  }
+  @media screen and (min-width: 500px) {
+    width: 350px;
+  }
   box-sizing: border-box;
   position: fixed;
   right: 0;

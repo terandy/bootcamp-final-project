@@ -7,16 +7,32 @@ import styled from 'styled-components';
 import ConvoList from './ConvoList.jsx';
 
 let Div = styled.div`
+  height: 100%;
+  box-sizing: border-box;
   display: flex;
-  height: 93vh;
 `;
 let MsgView = styled.div`
-  background-color: white;
-  border-radius: 1em;
-  width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-rows: 50px 1fr;
+  position: relative;
+  @media screen and (max-width: 400px) {
+    width: 50%;
+  }
+  @media screen and (min-width: 400px) {
+    width: 100%;
+  }
+  box-sizing: border-box;
+  & > div {
+    box-sizing: border-box;
+    background-color: white;
+    border: lightgrey solid 1px;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    position: absolute;
+    top: 0;
+    right: 0;
+    grid-template-rows: 50px 1fr 40px;
+  }
 `;
 
 let Messenger = props => {
@@ -31,9 +47,11 @@ let Messenger = props => {
     return (
       <Div>
         <ConvoList />
-        <MsgView>
-          <h1>Start chatting</h1>
-        </MsgView>
+        <div>
+          <MsgView>
+            <h1>Start chatting</h1>
+          </MsgView>
+        </div>
       </Div>
     );
   }
@@ -41,9 +59,11 @@ let Messenger = props => {
     <Div>
       <ConvoList />
       <MsgView>
-        <MsgDetail convoID={thisConvoID} />
-        <MsgDisplay convoID={thisConvoID} />
-        <MsgInput convoID={thisConvoID} />
+        <div>
+          <MsgDetail convoID={thisConvoID} />
+          <MsgDisplay convoID={thisConvoID} />
+          <MsgInput convoID={thisConvoID} />
+        </div>
       </MsgView>
     </Div>
   );

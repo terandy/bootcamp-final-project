@@ -34,6 +34,9 @@ let reducer = (state, action) => {
           convoID: action.content.convoID
         };
         break;
+      case 'update-active-user':
+        newState.activeUsers[action.content.userID] = action.content.userInfo;
+        break;
       case 'video-chat-initiator':
         newState.videoChatInitiator = action.content.initiator;
         break;

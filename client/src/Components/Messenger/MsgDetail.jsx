@@ -11,10 +11,6 @@ let Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  .search {
-    padding: 0;
-    padding-right: 1em;
-  }
 `;
 let VideoChat = styled.div`
   display: ${props => (props.active ? 'block' : 'none')};
@@ -22,8 +18,12 @@ let VideoChat = styled.div`
   padding: 0;
   padding-right: 1em;
   a {
+    height: 100%;
+    display: flex;
+    align-items: center;
     img {
-      height: 80%;
+      height: 35px;
+      width: 35px;
     }
   }
 `;

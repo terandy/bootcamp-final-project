@@ -1,5 +1,7 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const multer = require('multer');
+// const upload = multer({ dest: __dirname + '/build/uploads/' });
 const upload = multer({ dest: '../client/public/uploads/' });
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
@@ -29,6 +31,7 @@ let sockets = {};
 let sessions = {};
 let videoChats = {};
 
+// app.use(express.static(__dirname + '/build'));
 app.get('/', (req, res) => {
   res.send('server is running....');
 });
@@ -231,6 +234,9 @@ app.post('/get-userInfo', upload.none(), (req, res) => {
       console.log('ERROR', err);
     });
 });
+app.post('/get-active-users', upload.none(), (req, res) => {
+  res.json({ success: true, activeUsers: activeUsers });
+});
 
 app.post('/edit-profile-img', upload.single('imgSrc'), (req, res) => {
   let sid = req.cookies.sid;
@@ -245,6 +251,7 @@ app.post('/edit-profile-img', upload.single('imgSrc'), (req, res) => {
         }
       }
     );
+    activeUsers[userID].imgSrc = imgSrc;
     res.send(JSON.stringify({ success: true, imgSrc: imgSrc }));
     return;
   } else {
@@ -268,6 +275,9 @@ app.post('/edit-profile', upload.none(), (req, res) => {
         }
       }
     );
+    activeUsers[userID].fname = fname;
+    activeUsers[userID].lname = lname;
+    activeUsers[userID].description = description;
     res.send(JSON.stringify({ success: true }));
     return;
   } else {
@@ -277,6 +287,10 @@ app.post('/edit-profile', upload.none(), (req, res) => {
 
 io.on('connection', socket => {
   console.log('user connected:', socket.id);
+
+  socket.on('user-edit', userID => {
+    socket.broadcast.emit('active-user-edit', activeUsers[userID]);
+  });
 
   socket.on('login', userInfo => {
     sockets[userInfo.email] = socket.id;
@@ -420,4 +434,11 @@ io.on('connection', socket => {
   });
 });
 
-server.listen(5000);
+// app.get('/*', (req, res) => {
+//   res.sendFile(__dirname + '/build/index.html');
+// });
+const { PORT = 5000, LOCAL_ADDRESS = '0.0.0.0' } = process.env;
+server.listen(PORT, LOCAL_ADDRESS, () => {
+  const address = server.address();
+  console.log('server listening at', address);
+});
