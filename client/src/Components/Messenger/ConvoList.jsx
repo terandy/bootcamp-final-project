@@ -115,7 +115,7 @@ let ConvoList = () => {
     setFilter(evt.target.value);
   };
   let getConvo = (convoID, userID) => {
-    window.scrollTo({ left: window.innerWidth, behaviour: 'smooth' });
+    window.scrollTo({ left: window.innerWidth, behavior: 'smooth' });
     dispatch({ type: 'set-current-convo', content: convoID });
     dispatch({ type: 'remove-notification', content: userID });
     history.push('/messenger/' + convoID);

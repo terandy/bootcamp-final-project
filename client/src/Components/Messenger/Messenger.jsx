@@ -14,10 +14,10 @@ let Div = styled.div`
 let MsgView = styled.div`
   height: 100%;
   position: relative;
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: 500px) {
     width: 50%;
   }
-  @media screen and (min-width: 400px) {
+  @media screen and (min-width: 500px) {
     width: 100%;
   }
   box-sizing: border-box;

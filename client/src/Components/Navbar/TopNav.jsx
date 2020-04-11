@@ -13,10 +13,10 @@ top:0;
 height: ${TOP_BAR_HEIGHT}px;
 width: 100%;
 border-bottom: solid 1px lightgrey;
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
   padding: 0 ${SIDE_BAR_WIDTH / 2}px;
 }
-@media screen and (min-width: 400px) {
+@media screen and (min-width: 500px) {
   padding: 0 ${SIDE_BAR_WIDTH}px;
 }
 z-index: 1000;

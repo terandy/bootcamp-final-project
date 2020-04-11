@@ -22,23 +22,23 @@ let MainContainer = styled.div`
   height: 100vh;
   width: 100vw;
   min-width: 300px;
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: 500px) {
     width: ${props => (props.messenger ? '200vw' : '100vw')};
   }
-  @media screen and (min-width: 400px) {
+  @media screen and (min-width: 500px) {
     width: 100vw;
   }
 `;
 let Main = styled.div`
   box-sizing: border-box;
   padding-top: ${props => (props.videoChatMode ? '0' : TOP_BAR_HEIGHT + 'px')};
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: 500px) {
     padding-bottom: ${props =>
-      props.videoChatMode ? '0' : SIDE_BAR_WIDTH + 'px'};
+      props.videoChatMode || !props.loggedIn ? '0' : SIDE_BAR_WIDTH + 'px'};
   }
-  @media screen and (min-width: 400px) {
+  @media screen and (min-width: 500px) {
     padding-left: ${props =>
-      props.videoChatMode ? '0' : SIDE_BAR_WIDTH + 'px'};
+      props.videoChatMode || !props.loggedIn ? '0' : SIDE_BAR_WIDTH + 'px'};
   }
   width: 100%;
   height: 100%;
@@ -204,7 +204,7 @@ let App = () => {
       <TopNav />
       <MainContainer messenger={window.location.href.includes('messenger')}>
         <SideNav />
-        <Main videoChatMode={videoChatMode}>
+        <Main videoChatMode={videoChatMode} loggedIn={login}>
           <Route exact={true} path="/" render={renderHome} />
           <Route
             exact={true}
