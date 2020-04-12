@@ -7,18 +7,18 @@ const socket = io(window.location.origin, {
   autoConnect: false
 });
 
-let Login = () => {
+let Login = props => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const [email, emailChange] = useState('');
-  const [pw, pwChange] = useState('');
+  const [loginEmail, loginEmailChange] = useState('');
+  const [loginPw, loginPwChange] = useState('');
   const [errorMessage, errChange] = useState('');
 
   let submitHandler = async evt => {
     evt.preventDefault();
     let data = new FormData();
-    data.append('email', email);
-    data.append('pw', pw);
+    data.append('email', loginEmail);
+    data.append('pw', loginPw);
     let responseBody = await fetch('/login', { method: 'POST', body: data });
     let responseText = await responseBody.text();
     let response = JSON.parse(responseText);
@@ -45,28 +45,28 @@ let Login = () => {
         <h1>Sign in</h1>
       </Title>
       <div>
-        <label htmlFor="email">Email</label>
+        <label htmlFor="loginEmail">Email</label>
         <input
           type="text"
-          id="email"
+          id="loginEmail"
           required
           autoComplete="on"
-          value={email}
+          value={loginEmail}
           onChange={evt => {
-            emailChange(evt.target.value);
+            loginEmailChange(evt.target.value);
           }}
         />
       </div>
       <div>
-        <label htmlFor="pw">Password</label>
+        <label htmlFor="loginPw">Password</label>
         <input
           type="password"
-          id="pw"
+          id="loginPw"
           required
           autoComplete="off"
-          value={pw}
+          value={loginPw}
           onChange={evt => {
-            pwChange(evt.target.value);
+            loginPwChange(evt.target.value);
           }}
         />
       </div>

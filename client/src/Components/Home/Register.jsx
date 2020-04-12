@@ -2,15 +2,9 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Form, { Title, E } from './FormStyle.jsx';
-import styled from 'styled-components';
 import { socket } from './Login.jsx';
-const Outer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
-let Register = () => {
+let Register = props => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [email, emailChange] = useState('');

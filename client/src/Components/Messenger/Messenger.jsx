@@ -8,6 +8,7 @@ import ConvoList from './ConvoList.jsx';
 
 let Div = styled.div`
   height: 100%;
+  width: 100%;
   box-sizing: border-box;
   display: flex;
 `;
@@ -47,11 +48,12 @@ let Messenger = props => {
     return (
       <Div>
         <ConvoList />
-        <div>
-          <MsgView>
-            <h1>Start chatting</h1>
-          </MsgView>
-        </div>
+        <MsgView>
+          <img
+            src="/messenger-slide.jpeg"
+            style={{ height: '100%', width: '100%', objectFit: 'cover' }}
+          />
+        </MsgView>
       </Div>
     );
   }

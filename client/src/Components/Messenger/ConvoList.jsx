@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Form from './SearchBarStyle.jsx';
+import { SIDE_BAR_WIDTH } from '../../data.js';
 let MyInfo = styled.div`
   box-sizing: border-box;
   display: flex;
@@ -24,7 +25,7 @@ let Container = styled.div`
     width: 50%;
   }
   @media screen and (min-width: 500px) {
-    width: 300px;
+    width: 350px;
   }
   height: 100%;
   .box {

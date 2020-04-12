@@ -1,20 +1,20 @@
 import styled from 'styled-components';
 import Form from '../Home/FormStyle.jsx';
 let Form1 = styled(Form)`
-  position: absolute;
-  background-color: transparent;
-  top: 300px;
-  left: 50px;
-  height: min-content;
-  padding-bottom: 0;
   display: ${props => (props.displayInfo === 'form' ? 'block' : 'none')};
+  @media screen and (max-width: 500px) {
+    box-sizing: border-box;
+    width: 100vw;
+    margin-bottom: 4em;
+  }
+  @media screen and (min-width: 500px) {
+    width: 350px;
+  }
+  margin-top: 3em;
 `;
 let Cancel = styled.div`
   display: ${props => (props.disapear ? 'block' : 'none')};
-  position: absolute;
-  top: 40px;
-  right: 20px;
-  text-align: right;
+  text-align: left;
   color: rgb(1, 57, 59);
   &:hover {
     cursor: pointer;
@@ -23,10 +23,8 @@ let Cancel = styled.div`
   }
 `;
 let Info = styled.div`
-  position: absolute;
-  top: 300px;
-  left: 50px;
   display: ${props => (props.displayInfo === 'info' ? 'block' : 'none')};
+  margin: 6em 4em;
 `;
 let Img1 = styled.img`
   display: ${props => (props.img === 1 && !props.disapear ? 'block' : 'none')};
@@ -53,14 +51,11 @@ let Container = styled.div`
   background-color: white;
   margin-left: auto;
   margin-right: auto;
-  padding-bottom: 2em;
-  height: 100%;
   width: 100%;
   max-width: 800px;
+  min-height: 100%;
 `;
 let BackgroundImg = styled.div`
-  position: absolute;
-  top: 0;
   .container {
     width: 100%;
     height: 230px;

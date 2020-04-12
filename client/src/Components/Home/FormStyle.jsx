@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { TOP_BAR_HEIGHT } from '../../data.js';
 
 //Styling
 let Title = styled.div`
@@ -13,28 +14,16 @@ let Title = styled.div`
 
 const Form = styled.form`
   font-family: sans-serif;
-  display: flex;
-  flex-direction: column;
-  margin: 1em 2em;
+  padding: 2em;
+  display: ${props => props.propsDisplay};
   background-color: white;
-  padding: 1em;
-  @media screen and (max-width: 500px) {
-    width: 100%;
-  }
-  @media screen and (min-width: 500px) {
-    width: 350px;
-  }
-  box-sizing: border-box;
-  position: fixed;
-  right: 0;
-  border-radius: 0;
-  height: 100%;
-  margin: 0;
+  flex-direction: column;
   & > * {
     width: 100%;
   }
   .row {
     flex-direction: row;
+    display: flex;
     justify-content: space-between;
     & > div {
       width: 47%;
@@ -42,9 +31,10 @@ const Form = styled.form`
   }
 
   div {
-    display: flex;
+    display: ${props => props.propsDisplay};
     flex-direction: column;
     margin: 0.5em 0;
+
     & > * {
       margin: 0.1em 0;
       &:focus {
@@ -52,9 +42,11 @@ const Form = styled.form`
       }
     }
     input {
+      box-sizing: border-box;
       font-size: 0.75em;
       padding: 0.75em;
       border: 1px solid lightgrey;
+      width: 100%;
       &:hover {
         border: 1px solid rgb(234, 171, 0);
       }
@@ -68,6 +60,7 @@ const Form = styled.form`
     }
   }
   button {
+    width: 100%;
     background-color: rgb(234, 171, 0);
     border: none;
     color: rgb(0, 57, 70);

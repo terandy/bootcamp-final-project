@@ -38,9 +38,9 @@ let Div = styled.div`
   .innerDiv {
     width: 100%;
     height: 100%;
-    @media screen and (min-width: 800px) {
+    /* @media screen and (min-width: 800px) {
       padding: 0 ${SIDE_BAR_WIDTH}px;
-    }
+    } */
   }
 `;
 let Home = () => {

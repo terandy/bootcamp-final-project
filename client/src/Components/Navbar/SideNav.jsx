@@ -24,12 +24,12 @@ let SideNavStyle = styled.div`
         color: white;
         height: min-content;
       }
-
       div {
         box-sizing: border-box;
         padding: 1em;
         margin-bottom: 2em;
         position: relative;
+        height: 70px;
         &:hover {
           padding: 0.5em;
         }
@@ -127,7 +127,7 @@ let SideNav = () => {
             Profile
           </div>
         </Link>
-        <Link to={'/messenger'} onClick={scrollLeft}>
+        <Link onClick={scrollLeft} to={'/messenger'}>
           <div>
             <img alt="" src={'/messages.png'} />
             Chat
