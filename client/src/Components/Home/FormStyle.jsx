@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { TOP_BAR_HEIGHT } from '../../data.js';
 
 //Styling
 let Title = styled.div`

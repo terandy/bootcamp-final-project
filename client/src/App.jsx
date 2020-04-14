@@ -9,7 +9,7 @@ import Messenger from './Components/Messenger/Messenger.jsx';
 import VideoChat from './Components/Video/VideoChat.jsx';
 import Profile from './Components/Profile/Profile.jsx';
 import OtherProfile from './Components/Profile/OtherProfile.jsx';
-import ActiveUsers from './Components/Active/ActiveUsers.jsx';
+import Discover from './Components/Active/Discover.jsx';
 import Home from './Components/Home/Home.jsx';
 import Login from './Components/Home/Login.jsx';
 import Register from './Components/Home/Register.jsx';
@@ -32,6 +32,7 @@ let MainContainer = styled.div`
 let Main = styled.div`
   box-sizing: border-box;
   padding-top: ${props => (props.videoChatMode ? '0' : TOP_BAR_HEIGHT + 'px')};
+  overflow: scroll;
   @media screen and (max-width: 500px) {
     padding-bottom: ${props =>
       props.videoChatMode || !props.loggedIn ? '0' : SIDE_BAR_WIDTH + 'px'};
@@ -166,8 +167,8 @@ let App = () => {
   let renderViewProfile = renderData => {
     return <OtherProfile userID={renderData.match.params.userID} />;
   };
-  let renderActiveUsers = () => {
-    return <ActiveUsers />;
+  let renderDiscover = () => {
+    return <Discover />;
   };
   let renderLogin = () => {
     return <Login />;
@@ -227,7 +228,7 @@ let App = () => {
             path="/view-profile/:userID"
             render={renderData => renderViewProfile(renderData)}
           />
-          <Route exact={true} path="/active-users" render={renderActiveUsers} />
+          <Route exact={true} path="/active-users" render={renderDiscover} />
           <Route exact={true} path="/login" render={renderLogin} />
           <Route exact={true} path="/register" render={renderRegister} />
         </Main>

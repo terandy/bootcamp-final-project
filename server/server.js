@@ -20,6 +20,7 @@ MongoClient.connect(
   { useNewUrlParser: true, useUnifiedTopology: true },
   (err, db) => {
     dbo = db.db('media-board');
+    dbo.collection('users').createIndex({ '$**': 'text' });
     if (err) {
       console.log('ERROR', err);
     }
@@ -283,6 +284,26 @@ app.post('/edit-profile', upload.none(), (req, res) => {
   } else {
     res.send(JSON.stringify({ success: false }));
   }
+});
+app.post('/searchQuery', upload.none(), (req, res) => {
+  console.log('/searchQuery endpoint');
+  let searchInput = req.body.searchInput;
+  let capSearchInput =
+    searchInput[0].toUpperCase() +
+    searchInput.slice(1, searchInput.length).toLowerCase();
+  console.log('searching for', capSearchInput);
+  dbo
+    .collection('users')
+    .find({ $text: { $search: searchInput } })
+    .toArray()
+    .then(results => {
+      console.log('results', results);
+      res.send(JSON.stringify({ success: true, results: results }));
+    })
+    .catch(err => {
+      console.log('err', err);
+      res.send(JSON.stringify({ success: false }));
+    });
 });
 
 io.on('connection', socket => {
