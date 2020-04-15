@@ -115,7 +115,6 @@ let VideoChat = props => {
           <video
             key={'othervid'}
             autoPlay
-            muted
             ref={vid => {
               if (!otherStream || !vid) return;
               vid.srcObject = otherStream;
@@ -126,7 +125,6 @@ let VideoChat = props => {
           <video
             key={'myvid'}
             autoPlay
-            muted
             ref={vid => {
               if (!myStream || !vid) return;
               vid.srcObject = myStream;
