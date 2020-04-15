@@ -90,6 +90,15 @@ let SearchUserStyle = styled(ActiveUserStyle)`
   position: relative;
   .info {
     text-align: left;
+    h2 {
+      font-size: 20px;
+      font-weight: normal;
+      margin: 0;
+    }
+    p {
+      font-size: 12px;
+      margin: 0;
+    }
   }
   img {
     height: 50px;

@@ -22,12 +22,7 @@ let MainContainer = styled.div`
   height: 100vh;
   width: 100vw;
   min-width: 300px;
-  @media screen and (max-width: 500px) {
-    width: ${props => (props.messenger ? '200vw' : '100vw')};
-  }
-  @media screen and (min-width: 500px) {
-    width: 100vw;
-  }
+  width: 100vw;
 `;
 let Main = styled.div`
   box-sizing: border-box;
@@ -47,6 +42,7 @@ let Main = styled.div`
 let App = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  let mainRef = useRef();
   let me = useSelector(state => state.userInfo.email);
   let videoChatInvite = useSelector(state => state.videoChatInvite);
   let login = useSelector(state => state.login);
@@ -153,12 +149,25 @@ let App = () => {
     return <Home />;
   };
   let renderMessenger = renderData => {
+    if (mainRef.current) {
+      mainRef.current.scroll({
+        left: mainRef.current.scrollWidth,
+        right: 0,
+        behavior: 'smooth'
+      });
+    }
     return <Messenger convoID={renderData.match.params.mid} />;
   };
   let renderVideoChat = renderData => {
     return <VideoChat convoID={renderData.match.params.mid} />;
   };
   let renderMainMessenger = () => {
+    if (mainRef.current) {
+      mainRef.current.scroll({
+        left: 0,
+        right: 0
+      });
+    }
     return <Messenger />;
   };
   let renderProfile = () => {
@@ -205,7 +214,7 @@ let App = () => {
       <TopNav />
       <MainContainer messenger={window.location.href.includes('messenger')}>
         <SideNav />
-        <Main videoChatMode={videoChatMode} loggedIn={login}>
+        <Main videoChatMode={videoChatMode} loggedIn={login} ref={mainRef}>
           <Route exact={true} path="/" render={renderHome} />
           <Route
             exact={true}

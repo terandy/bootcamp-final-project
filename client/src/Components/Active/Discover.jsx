@@ -68,7 +68,7 @@ let Discover = () => {
           onChange={changeHandler}
           value={searchInput}
         />
-        <div className="button">
+        <div className="button" onClick={submitHandler}>
           <img src="/search.png" />
         </div>
       </Form>
@@ -86,7 +86,7 @@ let Discover = () => {
                   src={user.imgSrc ? user.imgSrc : '/default-profile-pic.png'}
                 />
                 <div className="info">
-                  <p>{user.fname + ' ' + user.lname}</p>
+                  <h2>{user.fname + ' ' + user.lname}</h2>
                   <p>{user.description}</p>
                 </div>
                 <div className="cover">View Profile</div>

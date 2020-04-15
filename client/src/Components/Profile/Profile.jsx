@@ -79,7 +79,8 @@ let Profile = () => {
     }
   };
   if (!userInfo) {
-    return <div>loading</div>;
+    //Loading
+    return <div></div>;
   }
   return (
     <Container>

@@ -26,6 +26,7 @@ let Nav = styled.div`
   position: fixed;
   display: ${props => (!props.videoChatMode ? 'block' : 'none')};
   top: 0;
+  left: 0;
   height: ${TOP_BAR_HEIGHT}px;
   width: 100%;
   border-bottom: solid 1px lightgrey;
