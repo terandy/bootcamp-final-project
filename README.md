@@ -1,5 +1,5 @@
 This project uses :
-- Frontend: [React](https://reactjs.org/)
+- Frontend: [React](https://reactjs.org/) and WebRTC
 - Backend: [Node.js](https://nodejs.org/en/), [Express](https://expressjs.com/) and [Socket.io](https://socket.io/)
 - Database: [MongoDB](https://www.mongodb.com/)
 
