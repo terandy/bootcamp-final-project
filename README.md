@@ -5,6 +5,8 @@ This project uses :
 ## Video Demo
 https://www.youtube.com/watch?v=xxzbZA8hO4s
 
+website: https://chat-with-us.herokuapp.com/
+
 ## How to view in browser
 
 In the following directories, run:
