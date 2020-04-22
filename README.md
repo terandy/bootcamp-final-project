@@ -6,6 +6,7 @@ This project uses :
 https://www.youtube.com/watch?v=xxzbZA8hO4s
 
 website: https://chat-with-us.herokuapp.com/
+(login with username: a, and password: a)
 
 ## How to view in browser
 
